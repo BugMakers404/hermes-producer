@@ -1,0 +1,4 @@
+rootProject.name = 'hermes-producer'
+include 'vicroad-bluetooth-travel-time'
+include 'other-potential-datasource'
+

@@ -1,0 +1,12 @@
+
+allprojects {
+    group 'org.ratman'
+}
+version '1.0-SNAPSHOT'
+
+task bootRunAll(type: GradleBuild, ) {
+    tasks = [
+            ':vicroad-bluetooth-travel-time:bootRun',
+            ':other-potential-datasource:bootRun',
+    ]
+}
