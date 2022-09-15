@@ -1,12 +1,22 @@
+plugins {
+    id 'com.avast.gradle.docker-compose' version '0.16.9'
+}
+
+version '1.0-SNAPSHOT'
 
 allprojects {
     group 'org.ratman'
 }
-version '1.0-SNAPSHOT'
 
-task bootRunAll(type: GradleBuild, ) {
-    tasks = [
-            ':vicroad-bluetooth-travel-time:bootRun',
-            ':other-potential-datasource:bootRun',
-    ]
+dockerCompose {
+    environment.put('HERMES_MONGODB_PORT', '27019')
+    useComposeFiles = ['docker/local/docker-compose.yaml']
+
+    local {
+        useComposeFiles = ['docker/local/docker-compose.yaml']
+    }
 }
+
+
+
+
