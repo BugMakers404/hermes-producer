@@ -1,20 +1,36 @@
 plugins {
     id 'com.avast.gradle.docker-compose' version '0.16.9'
+    id 'org.springframework.boot' version '2.7.3' apply false
+    id 'io.spring.dependency-management' version '1.0.13.RELEASE' apply false
+    id 'java'
 }
 
 version '1.0-SNAPSHOT'
 
 allprojects {
     group 'org.ratman'
+
+    repositories {
+        mavenCentral()
+    }
 }
+
+// Make subprojects dependencies consistent
+ext.libraries = [
+        spring_web: 'org.springframework.boot:spring-boot-starter-web',
+        http_client: 'org.apache.httpcomponents:httpclient:4.5.13',
+        lombok: 'org.projectlombok:lombok',
+        spring_test: 'org.springframework.boot:spring-boot-starter-test',
+        json: 'org.json:json:20220924'
+]
 
 dockerCompose {
     environment.put('HERMES_MONGODB_PORT', '27019')
     useComposeFiles = ['docker/local/docker-compose.yaml']
 
-    local {
-        useComposeFiles = ['docker/local/docker-compose.yaml']
-    }
+//    local {
+//        useComposeFiles = ['docker/local/docker-compose.yaml']
+//    }
 }
 
 
