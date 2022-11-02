@@ -26,31 +26,31 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Configuration
 public class RawDataHarvester {
 
-  @Async
-  @Scheduled(fixedDelay = 2000)
-  public void myTasks1() throws InterruptedException {
-    CloseableHttpClient httpclient = HttpClients.createDefault();
-    try {
-      URIBuilder builder = new URIBuilder("https://data-exchange-api.vicroads.vic.gov.au/bluetooth_data/links");
-      URI uri = builder.build();
-      HttpGet request = new HttpGet(uri);
-      request.setHeader("Ocp-Apim-Subscription-Key", "488f4599180941be86276225a6661d44");
-
-      HttpResponse response = httpclient.execute(request);
-      HttpEntity entity = response.getEntity();
-
-      if (entity != null) {
-        JSONArray objects = new JSONArray(EntityUtils.toString(entity));
-        for (int i = 0; i < 2; i++) {
-          System.out.println(i);
-          System.out.println(objects.get(i));
-        }
-      }
-
-
-    } catch (Exception e) {
-      System.out.println(e.getMessage().length());
-    }
-  }
+//  @Async
+//  @Scheduled(fixedDelay = 2000)
+//  public void myTasks1() throws InterruptedException {
+//    CloseableHttpClient httpclient = HttpClients.createDefault();
+//    try {
+//      URIBuilder builder = new URIBuilder("https://data-exchange-api.vicroads.vic.gov.au/bluetooth_data/links");
+//      URI uri = builder.build();
+//      HttpGet request = new HttpGet(uri);
+//      request.setHeader("Ocp-Apim-Subscription-Key", "488f4599180941be86276225a6661d44");
+//
+//      HttpResponse response = httpclient.execute(request);
+//      HttpEntity entity = response.getEntity();
+//
+//      if (entity != null) {
+//        JSONArray objects = new JSONArray(EntityUtils.toString(entity));
+//        for (int i = 0; i < 2; i++) {
+//          System.out.println(i);
+//          System.out.println(objects.get(i));
+//        }
+//      }
+//
+//
+//    } catch (Exception e) {
+//      System.out.println(e.getMessage().length());
+//    }
+//  }
 
 }
