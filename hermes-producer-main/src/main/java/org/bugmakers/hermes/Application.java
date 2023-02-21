@@ -1,11 +1,11 @@
-package org.ratman.hermes.producer;
+package org.bugmakers.hermes;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class OtherPotentialDatasource {
+public class Application {
   public static void main(String[] args) {
-    SpringApplication.run(OtherPotentialDatasource.class, args);
+    SpringApplication.run(Application.class, args);
   }
 }
