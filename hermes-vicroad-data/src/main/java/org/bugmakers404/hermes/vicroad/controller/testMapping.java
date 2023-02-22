@@ -10,4 +10,8 @@ public class testMapping {
   public String getHelloFromVicRoad() {
     return "hello this is vic road";
   }
+  @GetMapping(value = "/")
+  public String getHello() {
+    return "hello world";
+  }
 }
