@@ -1,4 +1,4 @@
-package org.bugmakers.hermes.controller;
+package org.bugmakers404.hermes.vicroad.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class testMapping {
 
   @GetMapping(value = "/hello")
-  public String getHello() {
-    return "hello world";
+  public String getHelloFromVicRoad() {
+    return "hello this is vic road";
   }
 }

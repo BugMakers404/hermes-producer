@@ -1,13 +1,20 @@
 plugins {
-    id 'org.springframework.boot' version '3.0.2'
+    id 'java'
 }
 
-apply plugin: 'io.spring.dependency-management'
-
-
 dependencies {
+    implementation project(':hermes-vicroad-data')
+
     implementation('org.springframework.boot:spring-boot-starter-web')
 //    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
     compileOnly('org.projectlombok:lombok')
     annotationProcessor('org.projectlombok:lombok')
+}
+
+jar {
+    enabled = false
+}
+
+bootJar {
+    enabled = true
 }

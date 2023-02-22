@@ -1,4 +1,4 @@
-package org.bugmakers.hermes.task;
+package org.bugmakers404.hermes.vicroad.task;
 
 import lombok.Data;
 
