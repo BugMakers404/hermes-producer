@@ -11,6 +11,16 @@ dependencies {
     annotationProcessor('org.projectlombok:lombok')
 }
 
+bootRun {
+    // support passing -Dsystem.property=value to bootRun task
+    systemProperties = System.properties
+
+    def appProps = findProperty('hermesAppProps')
+    if (appProps != null) {
+        systemProperty "spring.config.additional-location", appProps
+    }
+}
+
 jar {
     enabled = false
 }
