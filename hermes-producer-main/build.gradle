@@ -13,6 +13,8 @@ dependencies {
 
 bootRun {
     // support passing -Dsystem.property=value to bootRun task
+    // systemProperties is the jvm properties to run the springboot appliction
+    // Gradle uses the standard Java system properties to provide various configuration options and runtime information
     systemProperties = System.properties
 
     def appProps = findProperty('hermesAppProps')
