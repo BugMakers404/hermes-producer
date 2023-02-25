@@ -1,13 +1,22 @@
-test {
-    useJUnitPlatform()
-}
+//plugins {
+//    id 'org.springframework.boot' version '3.0.2'
+//}
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    testImplementation project(path: ':hermes-producer-main')
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation ('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+        exclude group: 'junit', module: 'junit'
+    }
     implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    testImplementation 'org.testng:testng:7.7.1'
 }
 
 jar {

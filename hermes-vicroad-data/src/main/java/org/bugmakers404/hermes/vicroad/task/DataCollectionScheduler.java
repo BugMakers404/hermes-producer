@@ -1,14 +1,8 @@
 package org.bugmakers404.hermes.vicroad.task;
 
-import java.net.URI;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableAsync
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class DataCollectionScheduler {
   private final BluetoothTravelTimeCollector bluetoothTravelTimeCollector;
 
