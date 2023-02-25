@@ -1,6 +1,9 @@
 package org.bugmakers404.hermes.vicroad.task;
 
+import jakarta.annotation.PostConstruct;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import lombok.Data;
 import org.apache.http.HttpEntity;
@@ -18,9 +21,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-//@EnableScheduling
-@EnableAsync
-@Configuration
+@Component
 public class BluetoothTravelTimeCollector {
 
   @Value("${vicroad.travel-time.url}")
@@ -29,25 +30,20 @@ public class BluetoothTravelTimeCollector {
   @Value("${vicroad.travel-time.subscription-key}")
   public String bluetoothTravelTimeKey;
 
-  @Scheduled(fixedRate = 30000)
-  public void collectBluetoothTravelTime() {
-    CloseableHttpClient httpclient = HttpClients.createDefault();
-    try {
-      URIBuilder builder = new URIBuilder(bluetoothTravelTimeUrl);
-      URI uri = builder.build();
-      HttpGet request = new HttpGet(uri);
-      request.setHeader("Ocp-Apim-Subscription-Key", bluetoothTravelTimeKey);
+  public CloseableHttpClient httpClient;
 
-      HttpResponse response = httpclient.execute(request);
-      HttpEntity entity = response.getEntity();
+  public HttpGet clientRequest;
 
-      if (entity != null) {
-        System.out.println(EntityUtils.toString(entity));
-      }
+  @PostConstruct
+  void initHttpClient() throws URISyntaxException {
+    this.httpClient = HttpClients.createDefault();
+    URIBuilder builder = new URIBuilder(bluetoothTravelTimeUrl);
+    URI uri = builder.build();
+    clientRequest = new HttpGet(uri);
+    clientRequest.setHeader("Ocp-Apim-Subscription-Key", bluetoothTravelTimeKey);
+  }
 
-    } catch (Exception e) {
-      System.out.println(e.getMessage().length());
-    }
-
+  public HttpResponse fetchData() throws IOException {
+    return this.httpClient.execute(clientRequest);
   }
 }
