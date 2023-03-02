@@ -45,9 +45,11 @@ services:
     restart: "no"
     ports:
       - ${HERMES_MONGODB_PORT:-27018}:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${HERMES_MONGODB_ROOT_USER_NAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${HERMES_MONGODB_ROOT_USER_PASSWORD}
+      # config user auth for mongo in the future
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: ${HERMES_MONGODB_ROOT_USER_NAME}
+#      MONGO_INITDB_ROOT_PASSWORD: ${HERMES_MONGODB_ROOT_USER_PASSWORD}
+#      MONGO_INITDB_SCRIPTS: /docker-entrypoint-initdb.d/init.js
     networks:
       - hermes-producer
 

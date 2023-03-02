@@ -4,7 +4,7 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class BluetoothLinksRawDataWithGeometry implements Serializable {
+public class LinksWithGeometry implements Serializable {
   public String timestamp;
 
   public String linksRawDataWithGeometry;

@@ -4,8 +4,8 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class BluetoothSitesRawData implements Serializable {
+public class Routes implements Serializable {
   public String timestamp;
 
-  public String sitesRawData;
+  public String routesRawData;
 }

@@ -1,8 +1,16 @@
 package org.bugmakers404.hermes.vicroad.task;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
+import org.bugmakers404.hermes.vicroad.dataentry.bluetoothRawData.Links;
+import org.bugmakers404.hermes.vicroad.service.LinksService;
+import org.bugmakers404.hermes.vicroad.utils.CONSTANTS;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -14,22 +22,37 @@ import org.springframework.scheduling.annotation.Scheduled;
 @RequiredArgsConstructor
 @Slf4j
 public class DataCollectionScheduler {
+  @NonNull
   private final BluetoothTravelTimeCollector bluetoothTravelTimeCollector;
 
-  @Scheduled(fixedRate = 30000)
-  public void collectBluetoothTravelTime() {
+  @NonNull
+  private final LinksService linksService;
 
-    try {
-      HttpEntity entity = bluetoothTravelTimeCollector.fetchData().getEntity();
+  @Scheduled(fixedRate = CONSTANTS.BLUETOOTH_DATA_DURATION)
+  public void collectBluetoothLinksData() throws IOException {
+    HttpEntity entity;
+    int retries = 0;
+    long startTime = System.currentTimeMillis();
 
-      if (entity != null) {
-//        System.out.println(EntityUtils.toString(entity));
-        System.out.println("yes");
+    log.info("Starting data collection");
+
+    while (retries < CONSTANTS.BLUETOOTH_DATA_MAX_RETRIES && System.currentTimeMillis() - startTime < CONSTANTS.BLUETOOTH_DATA_TIMEOUT) {
+
+      HttpResponse response = bluetoothTravelTimeCollector.fetchData();
+      entity = response.getEntity();
+
+      if (response.getStatusLine().getStatusCode() == 200) {
+        log.info("Links data are successfully received");
+        Links collectedLinks = new Links(LocalDateTime.now().toString(), EntityUtils.toString(entity));
+        linksService.saveNewCollections(collectedLinks);
+        log.info("Links data collected and stored successfully");
+        return;
+      } else {
+        retries++;
+        log.warn("Failed to collect links data. Retrying...");
       }
-
-    } catch (Exception e) {
-      System.out.println(e.getMessage().length());
     }
 
+    log.error("Failed to collect links data after " + CONSTANTS.BLUETOOTH_DATA_MAX_RETRIES + " retries");
   }
 }
