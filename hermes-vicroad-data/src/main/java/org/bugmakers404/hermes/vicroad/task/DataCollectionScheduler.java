@@ -9,7 +9,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.bugmakers404.hermes.vicroad.dataentry.bluetoothRawData.Links;
-import org.bugmakers404.hermes.vicroad.service.LinksService;
+import org.bugmakers404.hermes.vicroad.service.bluetoothRawData.Interfaces.LinksService;
 import org.bugmakers404.hermes.vicroad.utils.CONSTANTS;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -34,9 +34,10 @@ public class DataCollectionScheduler {
     int retries = 0;
     long startTime = System.currentTimeMillis();
 
-    log.info("Starting data collection");
+    log.info("Starting data collection of links");
 
-    while (retries < CONSTANTS.BLUETOOTH_DATA_MAX_RETRIES && System.currentTimeMillis() - startTime < CONSTANTS.BLUETOOTH_DATA_TIMEOUT) {
+    while (retries < CONSTANTS.BLUETOOTH_DATA_MAX_RETRIES
+        && System.currentTimeMillis() - startTime < CONSTANTS.BLUETOOTH_DATA_TIMEOUT) {
 
       HttpResponse response = bluetoothTravelTimeCollector.fetchData();
       entity = response.getEntity();
@@ -44,7 +45,7 @@ public class DataCollectionScheduler {
       if (response.getStatusLine().getStatusCode() == 200) {
         log.info("Links data are successfully received");
         Links collectedLinks = new Links(LocalDateTime.now().toString(), EntityUtils.toString(entity));
-        linksService.saveNewCollections(collectedLinks);
+        linksService.saveNewLinks(collectedLinks);
         log.info("Links data collected and stored successfully");
         return;
       } else {
@@ -53,6 +54,6 @@ public class DataCollectionScheduler {
       }
     }
 
-    log.error("Failed to collect links data after " + CONSTANTS.BLUETOOTH_DATA_MAX_RETRIES + " retries");
+    log.error("Failed to collect links data after %d retries".formatted(CONSTANTS.BLUETOOTH_DATA_MAX_RETRIES));
   }
 }

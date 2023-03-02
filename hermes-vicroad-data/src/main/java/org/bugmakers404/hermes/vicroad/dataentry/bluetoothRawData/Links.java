@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Slf4j
 @Data
 @AllArgsConstructor
-@Document(collection = "raw_data.links.links")
+@Document(collection = "bluetooth_raw_data.links")
 public class Links implements Serializable {
 
   @Id
