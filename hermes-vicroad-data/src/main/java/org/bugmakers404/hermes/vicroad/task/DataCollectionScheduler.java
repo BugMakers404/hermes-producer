@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.bugmakers404.hermes.vicroad.config.collector.DataCollector;
 import org.bugmakers404.hermes.vicroad.dataentry.bluetoothRawData.Links;
 import org.bugmakers404.hermes.vicroad.dataentry.bluetoothRawData.LinksWithGeometry;
 import org.bugmakers404.hermes.vicroad.dataentry.bluetoothRawData.Routes;
@@ -15,7 +16,7 @@ import org.bugmakers404.hermes.vicroad.service.bluetoothRawData.Interfaces.Links
 import org.bugmakers404.hermes.vicroad.service.bluetoothRawData.Interfaces.LinksWithGeometryService;
 import org.bugmakers404.hermes.vicroad.service.bluetoothRawData.Interfaces.RoutesService;
 import org.bugmakers404.hermes.vicroad.service.bluetoothRawData.Interfaces.SitesService;
-import org.bugmakers404.hermes.vicroad.utils.CONSTANTS;
+import org.bugmakers404.hermes.vicroad.utils.Constants;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
@@ -58,7 +59,7 @@ public class DataCollectionScheduler {
   }
 
   @Async
-  @Scheduled(fixedRate = CONSTANTS.BLUETOOTH_DATA_DURATION)
+  @Scheduled(fixedRate = Constants.BLUETOOTH_DATA_DURATION)
   public void collectLinksData() throws IOException {
     HttpEntity entity;
     int retries = 0;
@@ -66,8 +67,8 @@ public class DataCollectionScheduler {
 
     log.info("Starting data collection of links");
 
-    while (retries < CONSTANTS.BLUETOOTH_DATA_MAX_RETRIES
-        && System.currentTimeMillis() - startTime < CONSTANTS.BLUETOOTH_DATA_TIMEOUT) {
+    while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES
+        && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
 
       HttpResponse response = linksCollector.fetchData();
       entity = response.getEntity();
@@ -84,11 +85,11 @@ public class DataCollectionScheduler {
       }
     }
 
-    log.error("Failed to collect links data after %d retries".formatted(CONSTANTS.BLUETOOTH_DATA_MAX_RETRIES));
+    log.error("Failed to collect links data after %d retries".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
   }
 
   @Async
-  @Scheduled(fixedRate = CONSTANTS.BLUETOOTH_DATA_DURATION)
+  @Scheduled(fixedRate = Constants.BLUETOOTH_DATA_DURATION)
   public void collectLinksWithGeometryData() throws IOException {
     HttpEntity entity;
     int retries = 0;
@@ -96,15 +97,16 @@ public class DataCollectionScheduler {
 
     log.info("Starting data collection of links with geometry");
 
-    while (retries < CONSTANTS.BLUETOOTH_DATA_MAX_RETRIES
-        && System.currentTimeMillis() - startTime < CONSTANTS.BLUETOOTH_DATA_TIMEOUT) {
+    while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES
+        && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
 
       HttpResponse response = linksWithGeometryCollector.fetchData();
       entity = response.getEntity();
 
       if (response.getStatusLine().getStatusCode() == 200) {
         log.info("Links with geometry data are successfully received");
-        LinksWithGeometry collectedLinksWithGeometry = new LinksWithGeometry(LocalDateTime.now().toString(), EntityUtils.toString(entity));
+        LinksWithGeometry collectedLinksWithGeometry = new LinksWithGeometry(LocalDateTime.now().toString(),
+            EntityUtils.toString(entity));
         linksWithGeometryService.saveNewLinksWithGeometry(collectedLinksWithGeometry);
         log.info("Links with geometry data collected and stored successfully");
         return;
@@ -114,11 +116,12 @@ public class DataCollectionScheduler {
       }
     }
 
-    log.error("Failed to collect links with geometry data after %d retries".formatted(CONSTANTS.BLUETOOTH_DATA_MAX_RETRIES));
+    log.error(
+        "Failed to collect links with geometry data after %d retries".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
   }
 
   @Async
-  @Scheduled(fixedRate = CONSTANTS.BLUETOOTH_DATA_DURATION)
+  @Scheduled(fixedRate = Constants.BLUETOOTH_DATA_DURATION)
   public void collectRoutesData() throws IOException {
     HttpEntity entity;
     int retries = 0;
@@ -126,8 +129,8 @@ public class DataCollectionScheduler {
 
     log.info("Starting data collection of routes");
 
-    while (retries < CONSTANTS.BLUETOOTH_DATA_MAX_RETRIES
-        && System.currentTimeMillis() - startTime < CONSTANTS.BLUETOOTH_DATA_TIMEOUT) {
+    while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES
+        && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
 
       HttpResponse response = routesCollector.fetchData();
       entity = response.getEntity();
@@ -144,11 +147,11 @@ public class DataCollectionScheduler {
       }
     }
 
-    log.error("Failed to collect routes data after %d retries".formatted(CONSTANTS.BLUETOOTH_DATA_MAX_RETRIES));
+    log.error("Failed to collect routes data after %d retries".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
   }
 
   @Async
-  @Scheduled(fixedRate = CONSTANTS.BLUETOOTH_DATA_DURATION)
+  @Scheduled(fixedRate = Constants.BLUETOOTH_DATA_DURATION)
   public void collectSitesData() throws IOException {
     HttpEntity entity;
     int retries = 0;
@@ -156,8 +159,8 @@ public class DataCollectionScheduler {
 
     log.info("Starting data collection of sites");
 
-    while (retries < CONSTANTS.BLUETOOTH_DATA_MAX_RETRIES
-        && System.currentTimeMillis() - startTime < CONSTANTS.BLUETOOTH_DATA_TIMEOUT) {
+    while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES
+        && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
 
       HttpResponse response = sitesCollector.fetchData();
       entity = response.getEntity();
@@ -174,7 +177,7 @@ public class DataCollectionScheduler {
       }
     }
 
-    log.error("Failed to collect sites data after %d retries".formatted(CONSTANTS.BLUETOOTH_DATA_MAX_RETRIES));
+    log.error("Failed to collect sites data after %d retries".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
   }
 
 }

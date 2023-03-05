@@ -1,13 +1,11 @@
-package org.bugmakers404.hermes.vicroad.task;
+package org.bugmakers404.hermes.vicroad.config.collector;
 
 import java.net.URISyntaxException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.config.EnableIntegration;
 
 @Configuration
-@EnableIntegration
 public class DataCollectorConfig {
   @Value("${vicroad.subscription-key}")
   public String key;
