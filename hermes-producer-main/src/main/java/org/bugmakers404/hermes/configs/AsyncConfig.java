@@ -5,7 +5,6 @@ import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -14,20 +13,19 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 @EnableAsync
 @Slf4j
-public class AsyncConfig implements AsyncConfigurer {
+public class AsyncConfig implements AsyncConfigurer{
 
   @Value("${hermes.thread.maxpoolsize:2}")
   Integer poolSize;
 
   @Override
   @Bean
-  @Primary
   public AsyncTaskExecutor getAsyncExecutor() {
     ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
     if (poolSize <= 0) {
       throw new IllegalArgumentException("The value of hermes.thread.maxpoolsize must be greater than 0");
     }
-    pool.setCorePoolSize(poolSize);
+    pool.setCorePoolSize(poolSize / 2);
     pool.setMaxPoolSize(poolSize);
     pool.setThreadNamePrefix("HermesExec-");
     pool.setThreadPriority(Thread.MIN_PRIORITY);
@@ -40,13 +38,5 @@ public class AsyncConfig implements AsyncConfigurer {
     return (ex, method, params) -> log.error("Async method {} threw an exception: {}", method.getName(),
         ex.getMessage(), ex);
   }
-
-//  @Override
-//  public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-//    ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-//    taskScheduler.setPoolSize(5);
-//    taskScheduler.initialize();
-//    taskRegistrar.setTaskScheduler(taskScheduler);
-//  }
 }
 

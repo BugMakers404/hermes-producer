@@ -1,43 +1,64 @@
 version: "3.9"
-networks:
-  hermes-producer:
-    driver: bridge
-services:
-#  zookeeper:
-#    image: zookeeper:3.8.0
-#    ports:
-#      - '2181:2181'
-#    environment:
-#      - ALLOW_ANONYMOUS_LOGIN=yes
-#    restart: "no"
 
-#  kafka:
-#    hostname: mc_node_1
-#    image: bitnami/kafka:3.2.1
-#    ports:
-#      - '9092-9093:9092-9093'
-#    environment:
-#      - KAFKA_ENABLE_KRAFT=yes
-#      - KAFKA_BROKER_ID=1
-#      - KAFKA_KRAFT_CLUSTER_ID=7UYiXsIxQXaqrYVjztiofw
-#      - KAKFA_HEAP_OPTS=-Xmx512M -Xms16M
-#      - KAFKA_CFG_PROCESS_ROLES=broker,controller
-#      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-#      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093  # Listen requests from these paths (Default empty value is localhost)
-#      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-#      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://mc_node_1:9092 #  # Tell others which address you can communicate with me. ADVERTISED_LISTENSERS will be send back to clients to resolve. So if you are using hostname instead of IP address, pls make sure that the client has the hostnames mapping to IP addresses.
-#      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@mc_node_1:9093,2@mc_node_2:9093,3@mc_node_3:9093
-#      # - KAFKA_CFG_CONTROLLER_ELECTION_TIMEOUT_MS=50000
-#      # - KAFKA_CFG_CONTROLLER_FETCH_TIMEOUT_MS=50000
-#      # - KAFKA_CFG_REQUEST_SOCKET_TIMEOUT_MS=50000
-#      - ALLOW_PLAINTEXT_LISTENER=yes
-#    restart: "no"
-#    extra_hosts:
-#      - "mc_node_1:xx.xx.xx.xx"
-#      - "mc_node_2:xx.xx.xx.xx"
-#      - "mc_node_3:xx.xx.xx.xx"
-#    networks:
-#      - hermes-producer
+services:
+  kafka_node_1:
+    restart: "no"
+    image: bitnami/kafka:3.2.1
+    ports:
+      - '9092-9093:9092-9093'
+    environment:
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_BROKER_ID=1
+      - KAFKA_KRAFT_CLUSTER_ID=7UYiXsIxQXaqrYVjztiofw
+      - KAKFA_HEAP_OPTS=-Xmx128M -Xms16M
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      # Listen requests from these paths (Default empty value is localhost)
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+
+      # Tell clients which address you can communicate with me.
+      # ADVERTISED_LISTENERS will be sent back to clients to resolve. So if you are using hostname instead of
+      # IP address, pls make sure that the client has the hostnames mapping to IP addresses.
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka_node_1:9092
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka_node_1:9093,2@kafka_node_2:9093
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  kafka_node_2:
+    restart: "no"
+    image: bitnami/kafka:3.2.1
+    ports:
+      - '9094-9095:9092-9093'
+    environment:
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_BROKER_ID=2
+      - KAFKA_KRAFT_CLUSTER_ID=7UYiXsIxQXaqrYVjztiofw
+      - KAKFA_HEAP_OPTS=-Xmx128M -Xms16M
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka_node_2:9092
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka_node_1:9093,2@kafka_node_2:9093,3@kafka_node_3:9093
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  kafka_node_3:
+    restart: "no"
+    image: bitnami/kafka:3.2.1
+    ports:
+      - '9096-9097:9092-9093'
+    environment:
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_BROKER_ID=3
+      - KAFKA_KRAFT_CLUSTER_ID=7UYiXsIxQXaqrYVjztiofw
+      - KAKFA_HEAP_OPTS=-Xmx128M -Xms16M
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka_node_3:9092
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka_node_1:9093,2@kafka_node_2:9093,3@kafka_node_3:9093
+      - ALLOW_PLAINTEXT_LISTENER=yes
 
 
   mongodb:
@@ -50,8 +71,6 @@ services:
 #      MONGO_INITDB_ROOT_USERNAME: ${HERMES_MONGODB_ROOT_USER_NAME}
 #      MONGO_INITDB_ROOT_PASSWORD: ${HERMES_MONGODB_ROOT_USER_PASSWORD}
 #      MONGO_INITDB_SCRIPTS: /docker-entrypoint-initdb.d/init.js
-    networks:
-      - hermes-producer
 
 
 
