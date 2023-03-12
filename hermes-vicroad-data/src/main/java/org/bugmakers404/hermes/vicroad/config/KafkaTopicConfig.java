@@ -1,4 +1,4 @@
-package org.bugmakers404.hermes.vicroad.config.kafka;
+package org.bugmakers404.hermes.vicroad.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.bugmakers404.hermes.vicroad.utils.Constants;
@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
 @Configuration
-public class AutoCreateConfig {
+public class KafkaTopicConfig {
 
   @Bean
   public NewTopic topicOfLinks() {

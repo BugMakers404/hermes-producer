@@ -7,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.bugmakers404.hermes.vicroad.config.collector.DataCollector;
-import org.bugmakers404.hermes.vicroad.dataentry.bluetoothRawData.Links;
 import org.bugmakers404.hermes.vicroad.dataentry.bluetoothRawData.LinksWithGeometry;
 import org.bugmakers404.hermes.vicroad.dataentry.bluetoothRawData.Routes;
 import org.bugmakers404.hermes.vicroad.dataentry.bluetoothRawData.Sites;
@@ -16,6 +14,8 @@ import org.bugmakers404.hermes.vicroad.service.bluetoothRawData.Interfaces.Links
 import org.bugmakers404.hermes.vicroad.service.bluetoothRawData.Interfaces.LinksWithGeometryService;
 import org.bugmakers404.hermes.vicroad.service.bluetoothRawData.Interfaces.RoutesService;
 import org.bugmakers404.hermes.vicroad.service.bluetoothRawData.Interfaces.SitesService;
+import org.bugmakers404.hermes.vicroad.strategies.BluetoothEventsPreprocessor;
+import org.bugmakers404.hermes.vicroad.strategies.EventsCollector;
 import org.bugmakers404.hermes.vicroad.utils.Constants;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
@@ -28,26 +28,35 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableAsync
 @Configuration
 @Slf4j
-public class DataCollectionScheduler {
+public class EventsCollectionScheduler {
 
-  private final DataCollector linksCollector;
-  private final DataCollector linksWithGeometryCollector;
-  private final DataCollector routesCollector;
-  private final DataCollector sitesCollector;
+  private final EventsCollector linksCollector;
+
+  private final EventsCollector linksWithGeometryCollector;
+
+  private final EventsCollector routesCollector;
+
+  private final EventsCollector sitesCollector;
+
   private final LinksService linksService;
+
   private final LinksWithGeometryService linksWithGeometryService;
+
   private final RoutesService routesService;
+
   private final SitesService sitesService;
 
-  public DataCollectionScheduler(
-      @NonNull @Qualifier("linksCollector") DataCollector linksCollector,
-      @NonNull @Qualifier("linksWithGeometryCollector") DataCollector linksWithGeometryCollector,
-      @NonNull @Qualifier("routesCollector") DataCollector routesCollector,
-      @NonNull @Qualifier("sitesCollector") DataCollector sitesCollector,
-      @NonNull LinksService linksService,
-      @NonNull LinksWithGeometryService linksWithGeometryService,
-      @NonNull RoutesService routesService,
-      @NonNull SitesService sitesService) {
+  private final BluetoothEventsPreprocessor eventsPreprocessor;
+
+  private final KafkaEventsProducer kafkaEventsProducer;
+
+  public EventsCollectionScheduler(@NonNull @Qualifier("linksCollector") EventsCollector linksCollector,
+      @NonNull @Qualifier("linksWithGeometryCollector") EventsCollector linksWithGeometryCollector,
+      @NonNull @Qualifier("routesCollector") EventsCollector routesCollector,
+      @NonNull @Qualifier("sitesCollector") EventsCollector sitesCollector, @NonNull LinksService linksService,
+      @NonNull LinksWithGeometryService linksWithGeometryService, @NonNull RoutesService routesService,
+      @NonNull SitesService sitesService, BluetoothEventsPreprocessor eventsPreprocessor,
+      KafkaEventsProducer kafkaEventsProducer) {
     this.linksCollector = linksCollector;
     this.linksWithGeometryCollector = linksWithGeometryCollector;
     this.routesCollector = routesCollector;
@@ -56,6 +65,8 @@ public class DataCollectionScheduler {
     this.linksWithGeometryService = linksWithGeometryService;
     this.routesService = routesService;
     this.sitesService = sitesService;
+    this.eventsPreprocessor = eventsPreprocessor;
+    this.kafkaEventsProducer = kafkaEventsProducer;
   }
 
   @Async
@@ -75,9 +86,10 @@ public class DataCollectionScheduler {
 
       if (response.getStatusLine().getStatusCode() == 200) {
         log.info("Links data are successfully received");
-        Links collectedLinks = new Links(LocalDateTime.now().toString(), EntityUtils.toString(entity));
-        linksService.saveNewLinks(collectedLinks);
-        log.info("Links data collected and stored successfully");
+
+        eventsPreprocessor.filterLinksForKafka(EntityUtils.toString(entity));
+        kafkaEventsProducer.sendLinksEvent(linkEventsForKafka);
+        log.info("Links data are stored and sent successfully");
         return;
       } else {
         retries++;

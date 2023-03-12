@@ -1,6 +1,7 @@
-package org.bugmakers404.hermes.vicroad.config.collector;
+package org.bugmakers404.hermes.vicroad.config;
 
 import java.net.URISyntaxException;
+import org.bugmakers404.hermes.vicroad.strategies.EventsCollector;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,23 +25,23 @@ public class DataCollectorConfig {
 
 
   @Bean
-  public DataCollector linksCollector() throws URISyntaxException {
-    return new DataCollector(linksUrl, key);
+  public EventsCollector linksCollector() throws URISyntaxException {
+    return new EventsCollector(linksUrl, key);
   }
 
   @Bean
-  public DataCollector linksWithGeometryCollector() throws URISyntaxException {
-    return new DataCollector(linksWithGeometryUrl, key);
+  public EventsCollector linksWithGeometryCollector() throws URISyntaxException {
+    return new EventsCollector(linksWithGeometryUrl, key);
   }
 
   @Bean
-  public DataCollector routesCollector() throws URISyntaxException {
-    return new DataCollector(routesUrl, key);
+  public EventsCollector routesCollector() throws URISyntaxException {
+    return new EventsCollector(routesUrl, key);
   }
 
   @Bean
-  public DataCollector sitesCollector() throws URISyntaxException {
-    return new DataCollector(sitesUrl, key);
+  public EventsCollector sitesCollector() throws URISyntaxException {
+    return new EventsCollector(sitesUrl, key);
   }
 
 }

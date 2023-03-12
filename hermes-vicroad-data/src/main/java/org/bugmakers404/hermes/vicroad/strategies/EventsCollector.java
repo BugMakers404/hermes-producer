@@ -1,4 +1,4 @@
-package org.bugmakers404.hermes.vicroad.config.collector;
+package org.bugmakers404.hermes.vicroad.strategies;
 
 import java.io.IOException;
 import java.net.URI;
@@ -11,7 +11,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.bugmakers404.hermes.vicroad.utils.Constants;
 
-public class DataCollector {
+public class EventsCollector {
 
   @NonNull
   public String url;
@@ -23,7 +23,7 @@ public class DataCollector {
 
   public HttpGet clientGetRequest;
 
-  public DataCollector(String url, String key) throws URISyntaxException {
+  public EventsCollector(String url, String key) throws URISyntaxException {
     this.url = url;
     this.key = key;
     this.httpClient = HttpClients.createDefault();

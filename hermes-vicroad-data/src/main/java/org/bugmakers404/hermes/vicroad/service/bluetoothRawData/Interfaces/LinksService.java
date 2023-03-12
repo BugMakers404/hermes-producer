@@ -1,11 +1,11 @@
 package org.bugmakers404.hermes.vicroad.service.bluetoothRawData.Interfaces;
 
 import java.util.List;
-import org.bugmakers404.hermes.vicroad.dataentry.bluetoothRawData.Links;
+import org.bugmakers404.hermes.vicroad.dataentry.bluetoothRawData.link.Link;
 
 public interface LinksService {
 
-  Links saveNewLinks(Links collectedLinks);
+  Link saveNewLinks(Link collectedLinks);
 
-  List<Links> getAllLinks();
+  List<Link> getAllLinks();
 }
