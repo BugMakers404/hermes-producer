@@ -2,7 +2,6 @@ package org.bugmakers404.hermes.vicroad.task;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
@@ -28,34 +27,23 @@ public class KafkaEventsProducer {
   public void sendLinksEvent(List<Link> links) throws JsonProcessingException {
     for (Link link : links) {
       CompletableFuture<SendResult<String, String>> sentLinksResult = kafkaTemplate.send(
-          Constants.BLUETOOTH_DATA_TOPIC_LINKS, LocalDateTime.now().toString(), objectMapper.writeValueAsString(link));
+          Constants.BLUETOOTH_DATA_TOPIC_LINKS, link.getId() + "::" + link.getTimestamp().toString(),
+          objectMapper.writeValueAsString(link));
 
       sentLinksResult.whenCompleteAsync(this::handleSendResult);
     }
-    //    for (int i = 0; i < 20; i++) {
-    //      CompletableFuture<SendResult<String, String>> send = kafkaTemplate.send("hello", LocalDateTime.now().toString(),
-    //          "hi");
-    //      send.whenCompleteAsync(this::handleSendResult);
-    //    }
-
-    //    CompletableFuture<SendResult<String, String>> sentLinksResult = kafkaTemplate.send(
-    //        Constants.BLUETOOTH_DATA_TOPIC_LINKS, LocalDateTime.now().toString(), objectMapper.writeValueAsString(
-    //            links.get(0)));
-    //
-    //    sentLinksResult.whenCompleteAsync(this::handleSendResult);
   }
 
   private void handleSendResult(SendResult<String, String> result, Throwable exception) {
-    if (result != null) {
-      handleSuccess(result);
-    } else {
+    if (result == null) {
       handleFailure(exception);
     }
   }
 
   private void handleSuccess(SendResult<String, String> result) {
     RecordMetadata recordMetadata = result.getRecordMetadata();
-    log.info("Message Sent Successfully for the topic {} at partition {}.", recordMetadata.topic(), recordMetadata.partition());
+    log.info("Message Sent Successfully for the topic {} at partition {}.", recordMetadata.topic(),
+        recordMetadata.partition());
   }
 
   public void handleFailure(Throwable exception) {

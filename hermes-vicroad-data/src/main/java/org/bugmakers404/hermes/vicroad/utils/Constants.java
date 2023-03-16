@@ -22,6 +22,10 @@ public class Constants {
 
   public final static int KAFKA_PARTITION_COUNT = 3;
 
+  public final static int KAFKA_PARTITION_COUNT_LOCAL = 1;
+
   public final static int KAFKA_REPLICA_COUNT = 3;
+
+  public final static int KAFKA_REPLICA_COUNT_LOCAL = 1;
 
 }
