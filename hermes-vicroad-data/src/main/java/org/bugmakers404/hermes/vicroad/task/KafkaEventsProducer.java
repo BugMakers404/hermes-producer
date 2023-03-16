@@ -32,10 +32,21 @@ public class KafkaEventsProducer {
 
       sentLinksResult.whenCompleteAsync(this::handleSendResult);
     }
+    //    for (int i = 0; i < 20; i++) {
+    //      CompletableFuture<SendResult<String, String>> send = kafkaTemplate.send("hello", LocalDateTime.now().toString(),
+    //          "hi");
+    //      send.whenCompleteAsync(this::handleSendResult);
+    //    }
+
+    //    CompletableFuture<SendResult<String, String>> sentLinksResult = kafkaTemplate.send(
+    //        Constants.BLUETOOTH_DATA_TOPIC_LINKS, LocalDateTime.now().toString(), objectMapper.writeValueAsString(
+    //            links.get(0)));
+    //
+    //    sentLinksResult.whenCompleteAsync(this::handleSendResult);
   }
 
   private void handleSendResult(SendResult<String, String> result, Throwable exception) {
-    if (exception == null) {
+    if (result != null) {
       handleSuccess(result);
     } else {
       handleFailure(exception);
