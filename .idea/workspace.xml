@@ -5,47 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0309da16-a13c-4906-9fda-bca6b911e8c0" name="Changes" comment="send filtered links to the local kafka node">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker/local/docker-compose.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-producer-main/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-producer-main/src/main/java/org/bugmakers404/hermes/producer/Application.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-producer-main/src/main/java/org/bugmakers404/hermes/producer/configs/AsyncConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/config/DataCollectorConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/config/KafkaTopicConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/controller/testMapping.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/dao/bluetoothRawData/LinksDAO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/dao/bluetoothRawData/LinksWithGeometryDAO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/dao/bluetoothRawData/RoutesDAO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/dao/bluetoothRawData/SitesDAO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/dataentry/bluetoothRawData/LatestStats.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/dataentry/bluetoothRawData/LinkStat.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/dataentry/bluetoothRawData/LinksInfo.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/dataentry/bluetoothRawData/Routes.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/dataentry/bluetoothRawData/Sites.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/service/bluetoothRawData/Interfaces/LinksService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/service/bluetoothRawData/Interfaces/LinksWithGeometryService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/service/bluetoothRawData/Interfaces/RawEventsProcessService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/service/bluetoothRawData/Interfaces/RoutesService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/service/bluetoothRawData/Interfaces/SitesService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/service/bluetoothRawData/PersistentLinksService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/service/bluetoothRawData/PersistentLinksWithGeometryService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/service/bluetoothRawData/PersistentRoutesService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/service/bluetoothRawData/PersistentSitesService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/strategies/BluetoothEventsPreprocessor.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/strategies/EventsCollector.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/task/EventsCollectionScheduler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/task/KafkaEventsProducer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/main/java/org/bugmakers404/hermes/producer/vicroad/utils/Constants.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/test/java/org/bugmakers404/hermes/producer/vicroad/CollectBluetoothTravelTimeTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes-vicroad-data/src/test/java/org/bugmakers404/hermes/producer/vicroad/DateTimeTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,7 +53,17 @@
         <projects_view>
           <option name="showInheritedTasks" value="false" />
           <tree_state>
-            <expand />
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="hermes-producer" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="hermes-producer" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+            </expand>
             <select />
           </tree_state>
         </projects_view>
@@ -179,7 +149,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.hermes-producer:hermes-producer-main [bootRun]">
+  <component name="RunManager" selected="Gradle.hermes-producer [bootRun]">
     <configuration name="hermes-producer [bootRun]" type="GradleRunConfiguration" factoryName="Gradle" nameIsGenerated="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -430,7 +400,7 @@
       <workItem from="1679141372023" duration="16144000" />
       <workItem from="1679263798541" duration="5730000" />
       <workItem from="1679272229183" duration="6537000" />
-      <workItem from="1679287779721" duration="3738000" />
+      <workItem from="1679287779721" duration="4075000" />
     </task>
     <task id="LOCAL-00001" summary="update .gitignore to remove .idea">
       <created>1662340206281</created>
