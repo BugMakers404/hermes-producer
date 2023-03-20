@@ -3,8 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation project(':hermes-vicroad-data')
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation project(':hermes-producer-vicroad')
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -12,9 +11,9 @@ dependencies {
 
 bootRun {
     // support passing -Dsystem.property=value to bootRun task
-    // systemProperties is the jvm properties to run the springboot appliction
+    // systemProperties is the jvm properties to run the springboot application
     // Gradle uses the standard Java system properties to provide various configuration options and runtime information
-    systemProperties = System.properties
+    systemProperties = System.properties as Map<String, ?>
 
     def appProps = findProperty('hermesAppProps')
     if (appProps != null) {

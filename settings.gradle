@@ -1,4 +1,4 @@
 rootProject.name = 'hermes-producer'
 include 'hermes-producer-main'
-include 'hermes-vicroad-data'
+include 'hermes-producer-vicroad'
 

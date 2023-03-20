@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hermes-producer-main/hermes-producer.hermes-producer-main.main.iml" filepath="$PROJECT_DIR$/.idea/modules/hermes-producer-main/hermes-producer.hermes-producer-main.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hermes-producer-vicroad/hermes-producer.hermes-producer-vicroad.main.iml" filepath="$PROJECT_DIR$/.idea/modules/hermes-producer-vicroad/hermes-producer.hermes-producer-vicroad.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hermes-producer-main/org.bugmakers404.hermes.hermes-producer.hermes-producer-main.main.iml" filepath="$PROJECT_DIR$/.idea/modules/hermes-producer-main/org.bugmakers404.hermes.hermes-producer.hermes-producer-main.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hermes-vicroad-data/org.bugmakers404.hermes.hermes-producer.hermes-vicroad-data.main.iml" filepath="$PROJECT_DIR$/.idea/modules/hermes-vicroad-data/org.bugmakers404.hermes.hermes-producer.hermes-vicroad-data.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hermes-vicroad-data/org.bugmakers404.hermes.hermes-producer.hermes-vicroad-data.test.iml" filepath="$PROJECT_DIR$/.idea/modules/hermes-vicroad-data/org.bugmakers404.hermes.hermes-producer.hermes-vicroad-data.test.iml" />
+    </modules>
+  </component>
+</project>

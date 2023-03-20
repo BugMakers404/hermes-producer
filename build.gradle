@@ -1,6 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '3.0.2'
-    id 'com.palantir.git-version' version '1.0.0'
+    id 'com.palantir.git-version' version '2.0.0'
     id "com.avast.gradle.docker-compose" version "0.16.11"
 }
 
@@ -29,14 +29,14 @@ subprojects {
     }
 }
 
-def userName = findProperty('hermesMongoRootUserName').toString()
-def password = findProperty("hermesMongoRootPassword").toString()
-
-dockerCompose {
-    environment.put "HERMES_MONGODB_ROOT_USER_NAME",  "hermes"
-    environment.put "HERMES_MONGODB_ROOT_USER_PASSWORD", "zaizai2momo"
-    useComposeFiles = ['docker/local/docker-compose.yaml']
-}
+//def userName = findProperty('hermesMongoRootUserName').toString()
+//def password = findProperty("hermesMongoRootPassword").toString()
+//
+//dockerCompose {
+//    environment.put "HERMES_MONGODB_ROOT_USER_NAME",  "hermes"
+//    environment.put "HERMES_MONGODB_ROOT_USER_PASSWORD", "zaizai2momo"
+//    useComposeFiles = ['docker/local/docker-compose.yaml']
+//}
 
 
 
