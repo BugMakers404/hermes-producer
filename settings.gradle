@@ -1,4 +1,0 @@
-rootProject.name = 'hermes-producer'
-include 'hermes-producer-main'
-include 'hermes-producer-vicroad'
-
