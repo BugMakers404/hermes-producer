@@ -8,9 +8,10 @@ import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.BLUETOOTH
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,36 +31,49 @@ public class KafkaEventsProducer {
 
   private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
-  public void sendLinkEvents(String linkEvents) throws JsonProcessingException {
+  public void sendLinkEvents(String linkEvents) throws IOException {
     sendProducerRecords(BLUETOOTH_DATA_TOPIC_LINKS, linkEvents);
   }
 
-  public void sendLinkWithGeoEvents(String linkWithGeoEvents) throws JsonProcessingException {
+  public void sendLinkWithGeoEvents(String linkWithGeoEvents) throws IOException {
     sendProducerRecords(BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, linkWithGeoEvents);
   }
 
-  public void sendRouteEvents(String routeEvents) throws JsonProcessingException {
+  public void sendRouteEvents(String routeEvents) throws IOException {
     sendProducerRecords(BLUETOOTH_DATA_TOPIC_ROUTES, routeEvents);
   }
 
-  public void sendSiteEvents(String siteEvents) throws JsonProcessingException {
+  public void sendSiteEvents(String siteEvents) throws IOException {
     sendProducerRecords(BLUETOOTH_DATA_TOPIC_SITES, siteEvents);
   }
 
-  private void sendProducerRecords(String topic, String events) throws JsonProcessingException {
-    List<Map<String, Object>> eventsList = objectMapper.readValue(events, new TypeReference<>() {
-    });
+  private void sendProducerRecords(String topic, String events) throws IOException {
+    Optional<String> timestampOpt = extractTimestampFromEvents(events);
+    if (timestampOpt.isPresent()) {
+      List<Map<String, Object>> eventsList = objectMapper.readValue(events, new TypeReference<>() {
+      });
 
-    for (Map<String, Object> event : eventsList) {
-      ProducerRecord<String, String> eventRecord = buildProducerRecord(topic, event);
-      CompletableFuture<SendResult<String, String>> sentLinksResult = kafkaTemplate.send(eventRecord);
-      sentLinksResult.whenCompleteAsync(this::handleSendResult);
+      for (Map<String, Object> event : eventsList) {
+        ProducerRecord<String, String> eventRecord = buildProducerRecord(topic, event, timestampOpt.get());
+        CompletableFuture<SendResult<String, String>> sentLinksResult = kafkaTemplate.send(eventRecord);
+        sentLinksResult.whenCompleteAsync(this::handleSendResult);
+      }
     }
   }
 
-  private ProducerRecord<String, String> buildProducerRecord(String topic, Map<String, Object> event)
+  private Optional<String> extractTimestampFromEvents(String events) throws IOException {
+    List<Map<String, Object>> eventsList = objectMapper.readValue(events, new TypeReference<>() {
+    });
+
+    return eventsList.stream().filter(event -> event.get("latest_stats") != null)
+        .map(event -> (Map<String, Object>) event.get("latest_stats"))
+        .filter(latestStats -> latestStats.get("interval_start") != null)
+        .map(latestStats -> (String) latestStats.get("interval_start")).findFirst();
+  }
+
+  private ProducerRecord<String, String> buildProducerRecord(String topic, Map<String, Object> event, String timestamp)
       throws JsonProcessingException {
-    String key = Constants.EVENT_RECORD_KEY_TEMPLATE.formatted(LocalDateTime.now(), (Integer) event.get("id"));
+    String key = Constants.EVENT_RECORD_KEY_TEMPLATE.formatted(timestamp, (Integer) event.get("id"));
     return new ProducerRecord<>(topic, null, key, objectMapper.writeValueAsString(event));
   }
 

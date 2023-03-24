@@ -15,7 +15,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Slf4j
 public class AsyncConfig implements AsyncConfigurer{
 
-  @Value("${hermes.thread.maxpoolsize:2}")
+  @Value("${hermes.producer.thread.maxpoolsize:2}")
   Integer poolSize;
 
   @Override
@@ -23,7 +23,7 @@ public class AsyncConfig implements AsyncConfigurer{
   public AsyncTaskExecutor getAsyncExecutor() {
     ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
     if (poolSize <= 0) {
-      throw new IllegalArgumentException("The value of hermes.thread.maxpoolsize must be greater than 0");
+      throw new IllegalArgumentException("The value of hermes.producer.thread.maxpoolsize must be greater than 0");
     }
     pool.setCorePoolSize(poolSize / 2);
     pool.setMaxPoolSize(poolSize);

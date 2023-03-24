@@ -15,7 +15,7 @@ bootRun {
     // Gradle uses the standard Java system properties to provide various configuration options and runtime information
     systemProperties = System.properties as Map<String, ?>
 
-    def appProps = findProperty('hermesAppProps')
+    def appProps = findProperty('hermesProducerAppProps')
     if (appProps != null) {
         systemProperty "spring.config.additional-location", appProps
     }

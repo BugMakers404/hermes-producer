@@ -1,4 +1,4 @@
-package org.bugmakers404.hermes.producer.vicroad.config;
+package org.bugmakers404.hermes.producer.vicroad.configs;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.bugmakers404.hermes.producer.vicroad.utils.Constants;

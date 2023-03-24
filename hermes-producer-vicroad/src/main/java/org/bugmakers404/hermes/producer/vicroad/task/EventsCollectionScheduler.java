@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.bugmakers404.hermes.producer.vicroad.config.EventsCollector;
+import org.bugmakers404.hermes.producer.vicroad.configs.EventsCollector;
 import org.bugmakers404.hermes.producer.vicroad.utils.Constants;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package org.bugmakers404.hermes.producer.vicroad.config;
+package org.bugmakers404.hermes.producer.vicroad.configs;
 
 import java.net.URISyntaxException;
 import org.springframework.beans.factory.annotation.Value;
