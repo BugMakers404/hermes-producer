@@ -1,15 +1,20 @@
 package org.bugmakers404.hermes.producer.vicroad.task;
 
+import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.BLUETOOTH_DATA_TOPIC_LINKS;
+import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO;
+import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.BLUETOOTH_DATA_TOPIC_ROUTES;
+import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.BLUETOOTH_DATA_TOPIC_SITES;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.bugmakers404.hermes.producer.vicroad.utils.Constants;
 import org.springframework.kafka.core.KafkaProducerException;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -25,60 +30,50 @@ public class KafkaEventsProducer {
 
   private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
-  public void sendLinksEvent(String linkEvents) throws JsonProcessingException {
-
-    List<Map<String, Object>> eventsList = objectMapper.readValue(linkEvents, new TypeReference<>() {});
-
-    for (Map<String, Object> event : eventsList) {
-      CompletableFuture<SendResult<String, String>> sentLinksResult = kafkaTemplate.send(
-          Constants.BLUETOOTH_DATA_TOPIC_LINKS, objectMapper.writeValueAsString(event));
-      sentLinksResult.whenCompleteAsync(this::handleSendResult);
-    }
-
+  public void sendLinkEvents(String linkEvents) throws JsonProcessingException {
+    sendProducerRecords(BLUETOOTH_DATA_TOPIC_LINKS, linkEvents);
   }
 
-  public void sendLinksWithGeo(String linkWithGeoEvents) throws JsonProcessingException {
-    List<Map<String, Object>> eventsList = objectMapper.readValue(linkWithGeoEvents, new TypeReference<>() {});
-
-    for (Map<String, Object> event : eventsList) {
-      CompletableFuture<SendResult<String, String>> sentLinksResult = kafkaTemplate.send(
-          Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, objectMapper.writeValueAsString(event));
-      sentLinksResult.whenCompleteAsync(this::handleSendResult);
-    }
+  public void sendLinkWithGeoEvents(String linkWithGeoEvents) throws JsonProcessingException {
+    sendProducerRecords(BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, linkWithGeoEvents);
   }
 
-  public void sendRoutes(String routeEvents) throws JsonProcessingException {
-    List<Map<String, Object>> eventsList = objectMapper.readValue(routeEvents, new TypeReference<>() {});
+  public void sendRouteEvents(String routeEvents) throws JsonProcessingException {
+    sendProducerRecords(BLUETOOTH_DATA_TOPIC_ROUTES, routeEvents);
+  }
+
+  public void sendSiteEvents(String siteEvents) throws JsonProcessingException {
+    sendProducerRecords(BLUETOOTH_DATA_TOPIC_SITES, siteEvents);
+  }
+
+  private void sendProducerRecords(String topic, String events) throws JsonProcessingException {
+    List<Map<String, Object>> eventsList = objectMapper.readValue(events, new TypeReference<>() {
+    });
 
     for (Map<String, Object> event : eventsList) {
-      CompletableFuture<SendResult<String, String>> sentLinksResult = kafkaTemplate.send(
-          Constants.BLUETOOTH_DATA_TOPIC_ROUTES, objectMapper.writeValueAsString(event));
+      ProducerRecord<String, String> eventRecord = buildProducerRecord(topic, event);
+      CompletableFuture<SendResult<String, String>> sentLinksResult = kafkaTemplate.send(eventRecord);
       sentLinksResult.whenCompleteAsync(this::handleSendResult);
     }
   }
 
-  public void sendSites(String siteEvents) throws JsonProcessingException {
-    List<Map<String, Object>> eventsList = objectMapper.readValue(siteEvents, new TypeReference<>() {});
-
-    for (Map<String, Object> event : eventsList) {
-      CompletableFuture<SendResult<String, String>> sentLinksResult = kafkaTemplate.send(
-          Constants.BLUETOOTH_DATA_TOPIC_SITES, objectMapper.writeValueAsString(event));
-      sentLinksResult.whenCompleteAsync(this::handleSendResult);
-    }
+  private ProducerRecord<String, String> buildProducerRecord(String topic, Map<String, Object> event)
+      throws JsonProcessingException {
+    String key = Constants.EVENT_RECORD_KEY_TEMPLATE.formatted(LocalDateTime.now(), (Integer) event.get("id"));
+    return new ProducerRecord<>(topic, null, key, objectMapper.writeValueAsString(event));
   }
-
 
   private void handleSendResult(SendResult<String, String> result, Throwable exception) {
-    if (result == null) {
+    if (exception != null) {
       handleFailure(exception);
     }
   }
 
-  private void handleSuccess(SendResult<String, String> result) {
-    RecordMetadata recordMetadata = result.getRecordMetadata();
-    log.info("Message Sent Successfully for the topic {} at partition {}.", recordMetadata.topic(),
-        recordMetadata.partition());
-  }
+  //  private void handleSuccess(SendResult<String, String> result) {
+  //    RecordMetadata recordMetadata = result.getRecordMetadata();
+  //    log.info("Message Sent Successfully for the topic {} at partition {}.", recordMetadata.topic(),
+  //        recordMetadata.partition());
+  //  }
 
   public void handleFailure(Throwable exception) {
     ProducerRecord<String, String> failedRecord = ((KafkaProducerException) exception).getFailedProducerRecord();

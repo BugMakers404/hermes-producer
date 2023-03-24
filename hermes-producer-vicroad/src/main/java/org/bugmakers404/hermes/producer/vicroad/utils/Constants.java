@@ -20,17 +20,19 @@ public class Constants {
 
   public final static String BLUETOOTH_DATA_TOPIC_SITES = "vicroad-sites";
 
-  public final static int KAFKA_PARTITION_COUNT = 3;
+//  public final static int KAFKA_PARTITION_COUNT = 3;
 
   public final static int KAFKA_PARTITION_COUNT_LOCAL = 1;
 
-  public final static int KAFKA_REPLICA_COUNT = 3;
+  //  public final static int KAFKA_REPLICA_COUNT = 3;
 
   public final static int KAFKA_REPLICA_COUNT_LOCAL = 1;
 
-  public final static String VICROAD_DATA_ARCHIVES_ROOT = "../../vicroad_data_archives";
+  public final static String VICROAD_DATA_ARCHIVES_ROOT = "../vicroad_data_archives";
 
   public final static String DATETIME_PATTERN_FOR_FILENAME = "yyyy-MM-dd_HH-mm-ss";
+
+  public final static String EVENT_RECORD_KEY_TEMPLATE = "%s_%d";
 
   public final static String BLUETOOTH_DATA_ARCHIVES_DIR = VICROAD_DATA_ARCHIVES_ROOT + "/bluetooth";
 

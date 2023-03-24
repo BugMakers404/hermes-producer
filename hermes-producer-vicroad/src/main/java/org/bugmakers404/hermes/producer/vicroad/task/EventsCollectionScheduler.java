@@ -54,7 +54,7 @@ public class EventsCollectionScheduler {
     int retries = 0;
     long startTime = System.currentTimeMillis();
 
-    log.info("Link - starting data collection.");
+    log.info("Link - start data collection.");
 
     while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES
         && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
@@ -67,9 +67,9 @@ public class EventsCollectionScheduler {
         storeEventsToLocalFiles(content, Constants.LINKS_FILE_PATH.formatted(
             LocalDateTime.now().format(DateTimeFormatter.ofPattern(Constants.DATETIME_PATTERN_FOR_FILENAME))));
 
-        kafkaEventsProducer.sendLinksEvent(content);
+        kafkaEventsProducer.sendLinkEvents(content);
 
-        log.info("Link - data are stored and sent successfully.");
+        log.info("Link - successes to archive data.");
         return;
       } else {
         retries++;
@@ -77,7 +77,7 @@ public class EventsCollectionScheduler {
       }
     }
 
-    log.error("Link - Failed to collect data after %d retries.".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
+    log.error("Link - Failed to collect data after %d retries!!!".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
   }
 
   @Async
@@ -87,7 +87,7 @@ public class EventsCollectionScheduler {
     int retries = 0;
     long startTime = System.currentTimeMillis();
 
-    log.info("Link with Geo - starting data collection.");
+    log.info("Link with Geo - start data collection.");
 
     while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES
         && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
@@ -101,9 +101,9 @@ public class EventsCollectionScheduler {
         storeEventsToLocalFiles(content, Constants.LINKS_WITH_GEO_FILE_PATH.formatted(
             LocalDateTime.now().format(DateTimeFormatter.ofPattern(Constants.DATETIME_PATTERN_FOR_FILENAME))));
 
-        kafkaEventsProducer.sendLinksWithGeo(content);
+        kafkaEventsProducer.sendLinkWithGeoEvents(content);
 
-        log.info("Link with Geo - data are stored and sent successfully.");
+        log.info("Link with Geo - successes to archive data.");
         return;
       } else {
         retries++;
@@ -112,7 +112,7 @@ public class EventsCollectionScheduler {
     }
 
     log.error(
-        "Link with Geo - failed to collect data after %d retries.".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
+        "Link with Geo - failed to collect data after %d retries!!!".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
   }
 
   @Async
@@ -122,7 +122,7 @@ public class EventsCollectionScheduler {
     int retries = 0;
     long startTime = System.currentTimeMillis();
 
-    log.info("Route - starting data collection.");
+    log.info("Route - start data collection.");
 
     while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES
         && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
@@ -136,9 +136,9 @@ public class EventsCollectionScheduler {
         storeEventsToLocalFiles(content, Constants.ROUTES_FILE_PATH.formatted(
             LocalDateTime.now().format(DateTimeFormatter.ofPattern(Constants.DATETIME_PATTERN_FOR_FILENAME))));
 
-        kafkaEventsProducer.sendRoutes(content);
+        kafkaEventsProducer.sendRouteEvents(content);
 
-        log.info("Route - data collected and stored successfully.");
+        log.info("Route - successes to archive data.");
         return;
       } else {
         retries++;
@@ -146,7 +146,7 @@ public class EventsCollectionScheduler {
       }
     }
 
-    log.error("Route - failed to collect data after %d retries.".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
+    log.error("Route - failed to collect data after %d retries!!!".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
   }
 
   @Async
@@ -156,7 +156,7 @@ public class EventsCollectionScheduler {
     int retries = 0;
     long startTime = System.currentTimeMillis();
 
-    log.info("Site - starting data collection.");
+    log.info("Site - start data collection.");
 
     while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES
         && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
@@ -170,9 +170,9 @@ public class EventsCollectionScheduler {
         storeEventsToLocalFiles(content, Constants.SITES_FILE_PATH.formatted(
             LocalDateTime.now().format(DateTimeFormatter.ofPattern(Constants.DATETIME_PATTERN_FOR_FILENAME))));
 
-        kafkaEventsProducer.sendSites(content);
+        kafkaEventsProducer.sendSiteEvents(content);
 
-        log.info("Site - data collected and stored successfully.");
+        log.info("Site - successes to archive data.");
         return;
       } else {
         retries++;
@@ -180,7 +180,7 @@ public class EventsCollectionScheduler {
       }
     }
 
-    log.error("Site - failed to collect data after %d retries.".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
+    log.error("Site - failed to collect data after %d retries!!!".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
   }
 
   public void storeEventsToLocalFiles(String content, String filePath) {
@@ -190,7 +190,7 @@ public class EventsCollectionScheduler {
       Files.createDirectories(targetPath.getParent());
       Files.writeString(targetPath, content);
     } catch (IOException e) {
-      throw new RuntimeException("Failed to store string data to a local file", e);
+      throw new RuntimeException("Failed to store string data to a local file!!!", e);
     }
   }
 
