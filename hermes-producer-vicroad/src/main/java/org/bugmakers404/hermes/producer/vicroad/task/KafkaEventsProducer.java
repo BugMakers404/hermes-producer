@@ -83,12 +83,6 @@ public class KafkaEventsProducer {
     }
   }
 
-  //  private void handleSuccess(SendResult<String, String> result) {
-  //    RecordMetadata recordMetadata = result.getRecordMetadata();
-  //    log.info("Message Sent Successfully for the topic {} at partition {}.", recordMetadata.topic(),
-  //        recordMetadata.partition());
-  //  }
-
   public void handleFailure(Throwable exception) {
     ProducerRecord<String, String> failedRecord = ((KafkaProducerException) exception).getFailedProducerRecord();
     log.error("An error occurs when sending message for the topic {} at partition{}", failedRecord.topic(),
