@@ -42,6 +42,14 @@ services:
 #      MONGO_INITDB_ROOT_PASSWORD: ${HERMES_MONGODB_ROOT_USER_PASSWORD}
 #      MONGO_INITDB_SCRIPTS: /docker-entrypoint-initdb.d/init.js
 
+  jenkins:
+    image: tyriongump/jenkins:hermes
+    restart: "no"
+    ports:
+      - ${HERMES_JENKINS_PORT:-8080}:8080
+      - ${HERMES_JENKINS_JNLP_PORT:-50000}:50000
+
+
 
 
 

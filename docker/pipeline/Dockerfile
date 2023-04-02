@@ -8,9 +8,9 @@ ENV GRADLE_VERSION 7.6
 # Install necessary dependencies and setup the environment
 USER root
 
-# Install Java 17
+# Update package list, install Java 17, wget, unzip, and clean up
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends openjdk-${JAVA_VERSION}-jdk && \
+    apt-get install -y --no-install-recommends openjdk-${JAVA_VERSION}-jdk wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Gradle
@@ -29,3 +29,4 @@ USER jenkins
 
 # Set JAVA_HOME
 ENV JAVA_HOME=/usr/lib/jvm/java-${JAVA_VERSION}-openjdk-amd64
+ENV PATH=$PATH:$JAVA_HOME/bin
