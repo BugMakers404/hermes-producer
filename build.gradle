@@ -8,6 +8,7 @@ allprojects {
     apply plugin: 'base'
 }
 
+
 subprojects {
     apply plugin: 'com.palantir.git-version'
     apply plugin: 'java-library'

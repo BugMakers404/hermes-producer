@@ -1,4 +1,4 @@
-package org.bugmakers404.hermes.producer.vicroad.configs;
+package org.bugmakers404.hermes.producer.vicroad.task;
 
 import java.io.IOException;
 import java.net.URI;
@@ -24,9 +24,6 @@ public class EventsCollector {
   private CloseableHttpClient httpClient;
 
   private HttpGet clientGetRequest;
-
-
-
 
   public EventsCollector(String url, String key) throws URISyntaxException {
     this.url = url;

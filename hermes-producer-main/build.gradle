@@ -7,6 +7,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+        exclude group: 'junit', module: 'junit'
+    }
+
+    testImplementation 'org.testng:testng:7.7.1'
+    testImplementation 'org.apache.httpcomponents:httpclient:4.5.14'
+}
+
+springBoot {
+    mainClass = 'org.bugmakers404.hermes.producer.Application'
 }
 
 bootRun {
@@ -15,11 +27,16 @@ bootRun {
     // Gradle uses the standard Java system properties to provide various configuration options and runtime information
     systemProperties = System.properties as Map<String, ?>
 
-    def appProps = findProperty('hermesProducerAppProps')
-    if (appProps != null) {
-        systemProperty "spring.config.additional-location", appProps
-    }
+    // Apply external application.properties
+    systemProperty "spring.config.additional-location", hermesProducerAppProps
+
 }
+
+test {
+    useTestNG()
+    systemProperty "spring.config.additional-location", hermesProducerAppProps
+}
+
 
 jar {
     enabled = false
