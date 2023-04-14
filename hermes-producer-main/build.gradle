@@ -32,12 +32,6 @@ bootRun {
 
 }
 
-test {
-    useTestNG()
-    systemProperty "spring.config.additional-location", hermesProducerAppProps
-}
-
-
 jar {
     enabled = false
 }

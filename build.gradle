@@ -27,6 +27,7 @@ subprojects {
 
     test {
         useTestNG()
+        systemProperty "spring.config.additional-location", hermesProducerAppProps
     }
 }
 

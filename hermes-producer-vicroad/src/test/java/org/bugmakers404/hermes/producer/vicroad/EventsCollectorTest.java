@@ -24,7 +24,7 @@ public class EventsCollectorTest {
 
   @BeforeClass
   public void setUp() throws IOException {
-    String propertiesPath = System.getProperty("test.properties");
+    String propertiesPath = System.getProperty("spring.config.additional-location");
     Properties properties = new Properties();
     try (FileInputStream fis = new FileInputStream(propertiesPath)) {
       properties.load(fis);
