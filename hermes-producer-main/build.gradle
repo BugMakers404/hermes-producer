@@ -27,7 +27,7 @@ bootRun {
     // Gradle uses the standard Java system properties to provide various configuration options and runtime information
     systemProperties = System.properties as Map<String, ?>
 
-    // Apply external application.properties
+    // Apply the external application.properties
     systemProperty "spring.config.additional-location", hermesProducerAppProps
 
 }
@@ -38,4 +38,8 @@ jar {
 
 bootJar {
     enabled = true
+    from(hermesProducerAppProps) {
+        into 'BOOT-INF/classes'
+        rename 'hermes-producer-application.properties', 'application.properties'
+    }
 }
