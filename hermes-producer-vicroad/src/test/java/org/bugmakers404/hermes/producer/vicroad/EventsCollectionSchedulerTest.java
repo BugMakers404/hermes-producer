@@ -84,9 +84,9 @@ public class EventsCollectionSchedulerTest {
   @Test
   public void collectLinksDataFailureTest() throws IOException {
     String content = "Failed to collected links data.";
-    BasicHttpResponse successResponse = createMockedHttpResponse(500, content);
+    BasicHttpResponse failResponse = createMockedHttpResponse(500, content);
 
-    when(linksCollector.fetchData()).thenReturn(successResponse);
+    when(linksCollector.fetchData()).thenReturn(failResponse);
     eventsCollectionScheduler.collectLinksData();
     verify(linksCollector, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchData();
   }
@@ -104,9 +104,9 @@ public class EventsCollectionSchedulerTest {
   @Test
   public void collectLinksWithGeoDataFailureTest() throws IOException {
     String content = "Failed to collected links with Geo data.";
-    BasicHttpResponse successResponse = createMockedHttpResponse(500, content);
+    BasicHttpResponse failResponse = createMockedHttpResponse(500, content);
 
-    when(linksWithGeometryCollector.fetchData()).thenReturn(successResponse);
+    when(linksWithGeometryCollector.fetchData()).thenReturn(failResponse);
     eventsCollectionScheduler.collectLinksWithGeometryData();
     verify(linksWithGeometryCollector, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchData();
   }
@@ -124,9 +124,9 @@ public class EventsCollectionSchedulerTest {
   @Test
   public void collectRoutesDataFailureTest() throws IOException {
     String content = "Failed to collected routes data.";
-    BasicHttpResponse successResponse = createMockedHttpResponse(500, content);
+    BasicHttpResponse failResponse = createMockedHttpResponse(500, content);
 
-    when(routesCollector.fetchData()).thenReturn(successResponse);
+    when(routesCollector.fetchData()).thenReturn(failResponse);
     eventsCollectionScheduler.collectRoutesData();
     verify(routesCollector, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchData();
   }
@@ -144,9 +144,9 @@ public class EventsCollectionSchedulerTest {
   @Test
   public void collectSitesDataFailureTest() throws IOException {
     String content = "Failed to collected sites data.";
-    BasicHttpResponse successResponse = createMockedHttpResponse(500, content);
+    BasicHttpResponse failResponse = createMockedHttpResponse(500, content);
 
-    when(sitesCollector.fetchData()).thenReturn(successResponse);
+    when(sitesCollector.fetchData()).thenReturn(failResponse);
     eventsCollectionScheduler.collectSitesData();
     verify(sitesCollector, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchData();
   }

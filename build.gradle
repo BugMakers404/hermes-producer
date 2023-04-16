@@ -4,10 +4,11 @@ plugins {
     id "com.avast.gradle.docker-compose" version "0.16.11"
 }
 
+ext['appProps'] = findProperty('hermesProducerAppProps')
+
 allprojects {
     apply plugin: 'base'
 }
-
 
 subprojects {
     apply plugin: 'com.palantir.git-version'
@@ -21,13 +22,16 @@ subprojects {
     def versionSuffix  = project.hasProperty('release') ? '-RELEASE' : '-SNAPSHOT'
     version = versionDetails.lastTag  + versionSuffix
 
+
     repositories {
         mavenCentral()
     }
 
     test {
         useTestNG()
-        systemProperty "spring.config.additional-location", hermesProducerAppProps
+        if (rootProject.ext['appProps'] != null) {
+            systemProperty "spring.config.additional-location", rootProject.ext['appProps']
+        }
     }
 }
 
@@ -35,6 +39,8 @@ def userName = findProperty('hermesMongoRootUserName').toString()
 def password = findProperty("hermesMongoRootPassword").toString()
 
 dockerCompose {
+    projectName = 'hermes-producer'
+
     environment.put "HERMES_MONGODB_ROOT_USER_NAME", userName
     environment.put "HERMES_MONGODB_ROOT_USER_PASSWORD", password
     useComposeFiles = ['docker/local/docker-compose.yaml']

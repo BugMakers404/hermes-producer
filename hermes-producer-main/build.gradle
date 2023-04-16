@@ -1,7 +1,3 @@
-plugins {
-    id 'java'
-}
-
 dependencies {
     implementation project(':hermes-producer-vicroad')
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -28,8 +24,10 @@ bootRun {
     systemProperties = System.properties as Map<String, ?>
 
     // Apply the external application.properties
-    systemProperty "spring.config.additional-location", hermesProducerAppProps
-
+    // Please note do not use hermesProducerAppProps directly since CI server does not store it
+    if (rootProject.ext['appProps'] != null) {
+        systemProperty "spring.config.additional-location", rootProject.ext['appProps']
+    }
 }
 
 jar {

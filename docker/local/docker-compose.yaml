@@ -6,8 +6,8 @@ services:
   # you are telling Kafka to use the loopback address as the advertised listener.
   # However, other nodes in your Kafka cluster will not be able to connect to Kafka using the loopback address because
   # it is a local address and not accessible from other machines.
-  kafka_node_1:
-    restart: "no"
+  kafka_node:
+    restart: always
     image: bitnami/kafka:latest
     ports:
       - '9092-9093:9092-9093'
@@ -16,6 +16,7 @@ services:
       - KAFKA_BROKER_ID=1
       - KAFKA_KRAFT_CLUSTER_ID=7UYiXsIxQXaqrYVjztiofw
       - KAKFA_HEAP_OPTS=-Xmx128M -Xms16M
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=false
       - KAFKA_CFG_PROCESS_ROLES=broker,controller
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       # Listen requests from these paths (Default empty value is localhost)
@@ -31,23 +32,7 @@ services:
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@127.0.0.1:9093
       - ALLOW_PLAINTEXT_LISTENER=yes
 
-  mongodb:
-    image: mongo:6.0.1
-    restart: "no"
-    ports:
-      - ${HERMES_MONGODB_PORT:-27018}:27017
-    # config user auth for mongo in the future
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: ${HERMES_MONGODB_ROOT_USER_NAME}
-#      MONGO_INITDB_ROOT_PASSWORD: ${HERMES_MONGODB_ROOT_USER_PASSWORD}
-#      MONGO_INITDB_SCRIPTS: /docker-entrypoint-initdb.d/init.js
 
-  jenkins:
-    image: tyriongump/jenkins:hermes
-    restart: "no"
-    ports:
-      - ${HERMES_JENKINS_PORT:-8080}:8080
-      - ${HERMES_JENKINS_JNLP_PORT:-50000}:50000
 
 
 
