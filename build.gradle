@@ -4,8 +4,6 @@ plugins {
     id "com.avast.gradle.docker-compose" version "0.16.11"
 }
 
-ext['appProps'] = findProperty('hermesProducerAppProps')
-
 allprojects {
     apply plugin: 'base'
 }
@@ -29,8 +27,9 @@ subprojects {
 
     test {
         useTestNG()
-        if (rootProject.ext['appProps'] != null) {
-            systemProperty "spring.config.additional-location", rootProject.ext['appProps']
+        def appProps = findProperty('hermesProducerAppProps')
+        if (appProps != null) {
+            systemProperty "spring.config.additional-location", appProps
         }
     }
 }

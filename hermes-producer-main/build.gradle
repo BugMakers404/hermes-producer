@@ -25,8 +25,9 @@ bootRun {
 
     // Apply the external application.properties
     // Please note do not use hermesProducerAppProps directly since CI server does not store it
-    if (rootProject.ext['appProps'] != null) {
-        systemProperty "spring.config.additional-location", rootProject.ext['appProps']
+    def appProps = findProperty('hermesProducerAppProps')
+    if (appProps != null) {
+        systemProperty "spring.config.additional-location", appProps
     }
 }
 
@@ -36,8 +37,4 @@ jar {
 
 bootJar {
     enabled = true
-    from(hermesProducerAppProps) {
-        into 'BOOT-INF/classes'
-        rename 'hermes-producer-application.properties', 'application.properties'
-    }
 }
