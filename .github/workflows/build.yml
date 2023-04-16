@@ -13,12 +13,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
-permissions:
-  contents: read
-
 jobs:
   build:
     runs-on: ubuntu-22.04
+    
     steps:
     - name: Check out the current branch
       uses: actions/checkout@v3
@@ -59,8 +57,9 @@ jobs:
         rm gradle.properties
       
   test-report:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: build
+
     steps:
     - name: Check out the current branch
       uses: actions/checkout@v3
