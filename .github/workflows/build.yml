@@ -59,6 +59,7 @@ jobs:
   test-report:
     runs-on: ubuntu-22.04
     needs: build
+    if: always()
 
     steps:
     - name: Check out the current branch
