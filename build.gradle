@@ -23,6 +23,11 @@ subprojects {
         println "here1"
         version = findProperty('gitVersionDetails') + versionSuffix
     } else if (versionDetails() != null) {
+        if (versionDetails().lastTag == null) {
+            println "yes"
+        } else {
+            println "false"
+        }
         println "here2"
         version = versionDetails().lastTag + versionSuffix
     } else {
