@@ -25,7 +25,8 @@ jobs:
         echo "${{ secrets.APPLICATION_PROPERTIES }}" > application.properties
         
     - name: Create container resources required by hermes-producer
-      run: docker compose up -f docker/local/docker-compose.yaml -d --build
+      run:
+        docker compose -f docker/local/docker-compose.yaml up -d
       
     - name: Build with Gradle
       run: docker run \
