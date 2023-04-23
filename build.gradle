@@ -18,7 +18,15 @@ subprojects {
     group 'org.bugmakers404.hermes'
     def versionDetails = versionDetails()
     def versionSuffix  = project.hasProperty('release') ? '-RELEASE' : '-SNAPSHOT'
-    version = versionDetails.lastTag  + versionSuffix
+
+    if (versionDetails != null) {
+        version = versionDetails.lastTag  + versionSuffix
+    } else if (hasProperty('versionDetails')) {
+        version = findProperty('versionDetails') + versionSuffix
+    } else {
+        version = 'unknown' + versionSuffix
+    }
+
 
 
     repositories {
