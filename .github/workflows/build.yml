@@ -9,7 +9,6 @@ on:
 env:
   GRADLE_VERSION: "8.1.1"
   JDK_VERSION: "17"
-  GIT_VERSION: ${{ git describe --tag --always }}
 
 jobs:
   build:
@@ -31,12 +30,13 @@ jobs:
       
     - name: Build with Gradle
       run: |
+        GIT_VERSION=$(git describe --tag --always)
         docker run --network host \
                    --rm --mount type=bind,source="$(pwd)",target=/home/gradle/project \
                    -w /home/gradle/project gradle:${{ env.GRADLE_VERSION }}-jdk${{ env.JDK_VERSION }}-jammy \
                    bash -c "gradle -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xms256M -Xmx1g' \
                                    -PhermesProducerAppProps=/home/gradle/project/application.properties \
-                                   -PversionDetails=${{ env.GIT_VERSION }}
+                                   -PversionDetails=${GIT_VERSION}
                                    -i clean -x test check build"
 
     - name: Upload test results
