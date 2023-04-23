@@ -16,13 +16,15 @@ subprojects {
     apply plugin: 'io.spring.dependency-management'
 
     group 'org.bugmakers404.hermes'
-    def versionDetails = versionDetails()
+
     def versionSuffix  = project.hasProperty('release') ? '-RELEASE' : '-SNAPSHOT'
 
     if (hasProperty('gitVersionDetails')) {
+        println "here1"
         version = findProperty('gitVersionDetails') + versionSuffix
-    } else if (versionDetails != null) {
-        version = versionDetails.lastTag + versionSuffix
+    } else if (versionDetails() != null) {
+        println "here2"
+        version = versionDetails().lastTag + versionSuffix
     } else {
         version = 'unknown' + versionSuffix
     }
