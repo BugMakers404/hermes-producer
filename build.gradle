@@ -17,12 +17,14 @@ subprojects {
 
     group 'org.bugmakers404.hermes'
 
-    def versionSuffix  = project.hasProperty('release') ? '-RELEASE' : '-SNAPSHOT'
+    def versionDetails = versionDetails()
+    def versionSuffix = project.hasProperty('release') ? '-RELEASE' : '-SNAPSHOT'
+    def isRunningInPipeline = project.findProperty('isRunningInPipeline') == 'true'
 
-    if (hasProperty('gitVersionDetails')) {
-        version = findProperty('gitVersionDetails') + versionSuffix
+    if (isRunningInPipeline) {
+        version = 'latest' + versionSuffix
     } else {
-        version = versionDetails().lastTag + versionSuffix
+        version = versionDetails.lastTag + versionSuffix
     }
 
     repositories {
