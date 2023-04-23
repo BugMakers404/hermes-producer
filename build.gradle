@@ -18,9 +18,6 @@ subprojects {
     group 'org.bugmakers404.hermes'
     def versionDetails = versionDetails()
     def versionSuffix  = project.hasProperty('release') ? '-RELEASE' : '-SNAPSHOT'
-    println 'here?'
-    println versionDetails
-    println versionDetails.lastTag
     version = versionDetails.lastTag  + versionSuffix
 
 
