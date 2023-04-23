@@ -19,19 +19,11 @@ subprojects {
 
     def versionSuffix  = project.hasProperty('release') ? '-RELEASE' : '-SNAPSHOT'
 
+
     if (hasProperty('gitVersionDetails')) {
-        println "here1"
         version = findProperty('gitVersionDetails') + versionSuffix
-    } else if (versionDetails() != null) {
-        if (versionDetails().lastTag == null) {
-            println "yes"
-        } else {
-            println "false"
-        }
-        println "here2"
-        version = versionDetails().lastTag + versionSuffix
     } else {
-        version = 'unknown' + versionSuffix
+        version = versionDetails().lastTag + versionSuffix
     }
 
     repositories {

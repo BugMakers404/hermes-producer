@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 env:
-  GRADLE_VERSION: "7.6.1"
+  GRADLE_VERSION: "8.1.1"
   JDK_VERSION: "17"
 
 jobs:
@@ -36,7 +36,7 @@ jobs:
                    -w /home/gradle/project gradle:${{ env.GRADLE_VERSION }}-jdk${{ env.JDK_VERSION }}-jammy \
                    bash -c "gradle -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xms256M -Xmx1g' \
                                    -PhermesProducerAppProps=/home/gradle/project/application.properties \
-                                   -PgitVersionDetails=${GIT_VERSION} \
+                                   -PgitVersionDetails=\"${GIT_VERSION}\" \
                                    -i clean -x test check build"
 
     - name: Upload test results
@@ -48,7 +48,7 @@ jobs:
         
     - name: Clean up Docker resources
       if: always()
-      run: docker compose down
+      run: docker compose -f docker/local/docker-compose.yaml down
     
     - name: Remove Remove application.properties
       if: always()
