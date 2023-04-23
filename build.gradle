@@ -19,7 +19,6 @@ subprojects {
 
     def versionSuffix  = project.hasProperty('release') ? '-RELEASE' : '-SNAPSHOT'
 
-
     if (hasProperty('gitVersionDetails')) {
         version = findProperty('gitVersionDetails') + versionSuffix
     } else {
