@@ -36,7 +36,7 @@ jobs:
                    -w /home/gradle/project gradle:${{ env.GRADLE_VERSION }}-jdk${{ env.JDK_VERSION }}-jammy \
                    bash -c "gradle -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xms256M -Xmx1g' \
                                    -PhermesProducerAppProps=/home/gradle/project/application.properties \
-                                   -PgitVersionDetails=${GIT_VERSION}
+                                   -PgitVersionDetails=${GIT_VERSION} \
                                    -i clean -x test check build"
 
     - name: Upload test results

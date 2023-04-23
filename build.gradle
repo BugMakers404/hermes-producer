@@ -27,8 +27,6 @@ subprojects {
         version = 'unknown' + versionSuffix
     }
 
-
-
     repositories {
         mavenCentral()
     }
