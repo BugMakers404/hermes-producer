@@ -21,8 +21,8 @@ subprojects {
 
     if (versionDetails != null) {
         version = versionDetails.lastTag  + versionSuffix
-    } else if (hasProperty('versionDetails')) {
-        version = findProperty('versionDetails') + versionSuffix
+    } else if (hasProperty('gitVersionDetails')) {
+        version = findProperty('gitVersionDetails') + versionSuffix
     } else {
         version = 'unknown' + versionSuffix
     }
