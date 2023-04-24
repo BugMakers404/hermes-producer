@@ -11,14 +11,13 @@ env:
   JDK_VERSION: "17"
 
 jobs:
-  build:
+  testAndBuild:
     runs-on: ubuntu-22.04
     
     steps:
     - name: Check out the current branch
       uses: actions/checkout@v3
 
-    
     # secrets.APPLICATION_PROPERTIES is the content instead of the path to application.properties
     - name: Create application.properties
       run:
@@ -55,7 +54,7 @@ jobs:
       run:
         rm application.properties
       
-  test-report:
+  publishTestResults:
     runs-on: ubuntu-22.04
     needs: build
     if: always()
