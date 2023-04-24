@@ -1,2 +1,1 @@
-hello
-This is cave
+Testing the protection rule for the main branch.
