@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '3.0.2'
+    id 'org.springframework.boot' version '3.0.6'
     id 'com.palantir.git-version' version '3.0.0'
     id "com.avast.gradle.docker-compose" version "0.16.11"
 }
