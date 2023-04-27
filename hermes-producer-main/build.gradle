@@ -1,16 +1,8 @@
+apply plugin: 'org.springframework.boot'
+
 dependencies {
     implementation project(':hermes-producer-vicroad')
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-        exclude group: 'junit', module: 'junit'
-    }
-
-    testImplementation 'org.testng:testng:7.7.1'
-    testImplementation 'org.apache.httpcomponents:httpclient:4.5.14'
 }
 
 springBoot {
