@@ -14,8 +14,8 @@ import java.nio.file.Paths;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
+import org.bugmakers404.hermes.producer.vicroad.task.AggregatedEventsCollector;
 import org.bugmakers404.hermes.producer.vicroad.task.EventsCollectionScheduler;
-import org.bugmakers404.hermes.producer.vicroad.task.EventsCollector;
 import org.bugmakers404.hermes.producer.vicroad.task.KafkaEventsProducer;
 import org.bugmakers404.hermes.producer.vicroad.utils.Constants;
 import org.mockito.Mock;
@@ -28,37 +28,35 @@ import org.testng.annotations.Test;
 public class EventsCollectionSchedulerTest {
 
   @Mock
-  private EventsCollector linksCollector;
-
-  @Mock
-  private EventsCollector linksWithGeometryCollector;
-
-  @Mock
-  private EventsCollector routesCollector;
-
-  @Mock
-  private EventsCollector sitesCollector;
+  private AggregatedEventsCollector aggregatedEventsCollector;
 
   @Mock
   private KafkaEventsProducer kafkaEventsProducer;
 
   private EventsCollectionScheduler eventsCollectionScheduler;
 
+  private final String successResponseContent = "[{'latest_stats': {'interval_start': '2023-03-20T18:08:00+11:00'}}]";
+
+  private final String failedResponseContent = "[]";
+
+  private AutoCloseable closeable;
+
   @BeforeMethod
   public void setUp() {
-    MockitoAnnotations.openMocks(this);
-    eventsCollectionScheduler = new EventsCollectionScheduler(linksCollector, linksWithGeometryCollector,
-        routesCollector, sitesCollector, kafkaEventsProducer);
+    closeable = MockitoAnnotations.openMocks(this);
+    eventsCollectionScheduler = new EventsCollectionScheduler(aggregatedEventsCollector, kafkaEventsProducer);
   }
 
   @AfterMethod
-  public void tearDown() throws IOException {
-    // eventsCollectionScheduler will collect data and archive them so it is required to delete the mock data.
+  public void tearDown() throws Exception {
+    // eventsCollectionScheduler will collect data and archive them, so it is required to delete the mock data.
     Path archiveDirectoryPath = Paths.get(VICROAD_DATA_ARCHIVES_ROOT);
     if (Files.exists(archiveDirectoryPath)) {
       boolean isDeleted = FileSystemUtils.deleteRecursively(archiveDirectoryPath);
       assertTrue(isDeleted);
     }
+
+    closeable.close();
   }
 
   private BasicHttpResponse createMockedHttpResponse(int statusCode, String content) {
@@ -73,82 +71,74 @@ public class EventsCollectionSchedulerTest {
 
   @Test
   public void collectLinksDataSuccessTest() throws IOException {
-    String content = "Successfully collected links data.";
-    BasicHttpResponse successResponse = createMockedHttpResponse(200, content);
+    BasicHttpResponse successResponse = createMockedHttpResponse(200, successResponseContent);
 
-    when(linksCollector.fetchData()).thenReturn(successResponse);
+    when(aggregatedEventsCollector.fetchLinksData()).thenReturn(successResponse);
     eventsCollectionScheduler.collectLinksData();
-    verify(linksCollector, times(1)).fetchData();
+    verify(aggregatedEventsCollector, times(1)).fetchLinksData();
   }
 
   @Test
   public void collectLinksDataFailureTest() throws IOException {
-    String content = "Failed to collected links data.";
-    BasicHttpResponse failResponse = createMockedHttpResponse(500, content);
+    BasicHttpResponse failResponse = createMockedHttpResponse(500, failedResponseContent);
 
-    when(linksCollector.fetchData()).thenReturn(failResponse);
+    when(aggregatedEventsCollector.fetchLinksData()).thenReturn(failResponse);
     eventsCollectionScheduler.collectLinksData();
-    verify(linksCollector, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchData();
+    verify(aggregatedEventsCollector, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchLinksData();
   }
 
   @Test
   public void collectLinksWithGeoDataSuccessTest() throws IOException {
-    String content = "Successfully collected links with Geo data.";
-    BasicHttpResponse successResponse = createMockedHttpResponse(200, content);
+    BasicHttpResponse successResponse = createMockedHttpResponse(200, successResponseContent);
 
-    when(linksWithGeometryCollector.fetchData()).thenReturn(successResponse);
-    eventsCollectionScheduler.collectLinksWithGeometryData();
-    verify(linksWithGeometryCollector, times(1)).fetchData();
+    when(aggregatedEventsCollector.fetchLinksWithGeoData()).thenReturn(successResponse);
+    eventsCollectionScheduler.collectLinksWithGeoData();
+    verify(aggregatedEventsCollector, times(1)).fetchLinksWithGeoData();
   }
 
   @Test
   public void collectLinksWithGeoDataFailureTest() throws IOException {
-    String content = "Failed to collected links with Geo data.";
-    BasicHttpResponse failResponse = createMockedHttpResponse(500, content);
+    BasicHttpResponse failResponse = createMockedHttpResponse(500, failedResponseContent);
 
-    when(linksWithGeometryCollector.fetchData()).thenReturn(failResponse);
-    eventsCollectionScheduler.collectLinksWithGeometryData();
-    verify(linksWithGeometryCollector, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchData();
+    when(aggregatedEventsCollector.fetchLinksWithGeoData()).thenReturn(failResponse);
+    eventsCollectionScheduler.collectLinksWithGeoData();
+    verify(aggregatedEventsCollector, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchLinksWithGeoData();
   }
 
   @Test
   public void collectRoutesDataSuccessTest() throws IOException {
-    String content = "Successfully collected routes data.";
-    BasicHttpResponse successResponse = createMockedHttpResponse(200, content);
+    BasicHttpResponse successResponse = createMockedHttpResponse(200, successResponseContent);
 
-    when(routesCollector.fetchData()).thenReturn(successResponse);
+    when(aggregatedEventsCollector.fetchRoutesData()).thenReturn(successResponse);
     eventsCollectionScheduler.collectRoutesData();
-    verify(routesCollector, times(1)).fetchData();
+    verify(aggregatedEventsCollector, times(1)).fetchRoutesData();
   }
 
   @Test
   public void collectRoutesDataFailureTest() throws IOException {
-    String content = "Failed to collected routes data.";
-    BasicHttpResponse failResponse = createMockedHttpResponse(500, content);
+    BasicHttpResponse failResponse = createMockedHttpResponse(500, failedResponseContent);
 
-    when(routesCollector.fetchData()).thenReturn(failResponse);
+    when(aggregatedEventsCollector.fetchRoutesData()).thenReturn(failResponse);
     eventsCollectionScheduler.collectRoutesData();
-    verify(routesCollector, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchData();
+    verify(aggregatedEventsCollector, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchRoutesData();
   }
 
   @Test
   public void collectSitesDataSuccessTest() throws IOException {
-    String content = "Successfully collected sites data.";
-    BasicHttpResponse successResponse = createMockedHttpResponse(200, content);
+    BasicHttpResponse successResponse = createMockedHttpResponse(200, successResponseContent);
 
-    when(sitesCollector.fetchData()).thenReturn(successResponse);
+    when(aggregatedEventsCollector.fetchSitesData()).thenReturn(successResponse);
     eventsCollectionScheduler.collectSitesData();
-    verify(sitesCollector, times(1)).fetchData();
+    verify(aggregatedEventsCollector, times(1)).fetchSitesData();
   }
 
   @Test
   public void collectSitesDataFailureTest() throws IOException {
-    String content = "Failed to collected sites data.";
-    BasicHttpResponse failResponse = createMockedHttpResponse(500, content);
+    BasicHttpResponse failResponse = createMockedHttpResponse(500, failedResponseContent);
 
-    when(sitesCollector.fetchData()).thenReturn(failResponse);
+    when(aggregatedEventsCollector.fetchSitesData()).thenReturn(failResponse);
     eventsCollectionScheduler.collectSitesData();
-    verify(sitesCollector, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchData();
+    verify(aggregatedEventsCollector, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchSitesData();
   }
 
 }
