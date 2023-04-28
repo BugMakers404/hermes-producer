@@ -1,4 +1,4 @@
-package org.bugmakers404.hermes.producer.vicroad.task;
+package org.bugmakers404.hermes.producer.vicroad.configs;
 
 import java.io.IOException;
 import java.net.URI;

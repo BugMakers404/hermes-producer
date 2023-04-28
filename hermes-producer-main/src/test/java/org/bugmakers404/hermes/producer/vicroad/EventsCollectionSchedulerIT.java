@@ -2,8 +2,8 @@ package org.bugmakers404.hermes.producer.vicroad;
 
 import static org.mockito.Mockito.verify;
 
+import org.bugmakers404.hermes.producer.vicroad.configs.EventsCollector;
 import org.bugmakers404.hermes.producer.vicroad.task.EventsCollectionScheduler;
-import org.bugmakers404.hermes.producer.vicroad.task.EventsCollector;
 import org.bugmakers404.hermes.producer.vicroad.task.KafkaEventsProducer;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -51,7 +51,7 @@ public class EventsCollectionSchedulerIT extends AbstractTestNGSpringContextTest
 
   @Test(enabled = false)
   public void testCollectLinksWithGeometryData() throws Exception {
-    eventsCollectionScheduler.collectLinksWithGeometryData();
+    eventsCollectionScheduler.collectLinksWithGeoData();
     verify(linksWithGeometryCollector).fetchData();
   }
 

@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import org.apache.http.HttpResponse;
-import org.bugmakers404.hermes.producer.vicroad.task.EventsCollector;
+import org.bugmakers404.hermes.producer.vicroad.configs.EventsCollector;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
