@@ -1,6 +1,5 @@
-package org.bugmakers404.hermes.producer.vicroad.task;
+package org.bugmakers404.hermes.producer.vicroad.service;
 
-import java.io.IOException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
@@ -8,8 +7,10 @@ import org.bugmakers404.hermes.producer.vicroad.configs.EventsCollector;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-@Component
+import java.io.IOException;
+
 @Slf4j
+@Component
 public class AggregatedEventsCollector {
 
   private final EventsCollector linksCollector;
@@ -21,9 +22,9 @@ public class AggregatedEventsCollector {
   private final EventsCollector sitesCollector;
 
   public AggregatedEventsCollector(@NonNull @Qualifier("linksCollector") EventsCollector linksCollector,
-      @NonNull @Qualifier("linksWithGeometryCollector") EventsCollector linksWithGeometryCollector,
-      @NonNull @Qualifier("routesCollector") EventsCollector routesCollector,
-      @NonNull @Qualifier("sitesCollector") EventsCollector sitesCollector) {
+                                   @NonNull @Qualifier("linksWithGeometryCollector") EventsCollector linksWithGeometryCollector,
+                                   @NonNull @Qualifier("routesCollector") EventsCollector routesCollector,
+                                   @NonNull @Qualifier("sitesCollector") EventsCollector sitesCollector) {
 
     this.linksCollector = linksCollector;
     this.linksWithGeometryCollector = linksWithGeometryCollector;

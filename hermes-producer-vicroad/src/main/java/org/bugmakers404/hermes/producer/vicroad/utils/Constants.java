@@ -24,23 +24,24 @@ public class Constants {
 
     public final static String BLUETOOTH_DATA_TOPIC_SITES = "vicroad-sites";
 
-    //  public final static int KAFKA_PARTITION_COUNT = 3;
-
     public final static int KAFKA_PARTITION_COUNT_LOCAL = 1;
-
-    //  public final static int KAFKA_REPLICA_COUNT = 3;
 
     public final static int KAFKA_REPLICA_COUNT_LOCAL = 1;
 
-    public final static DateTimeFormatter DATE_TIME_FORMATTER_FOR_FILENAME = DateTimeFormatter.ofPattern(
-        "yyyy-MM-dd_HH-mm-ss");
-
-    public final static DateTimeFormatter DATE_TIME_FORMATTER_FOR_KAFKA = DateTimeFormatter.ofPattern(
-        "yyyy-MM-dd'T'HH:mm:ssXXX");
-
     public final static String EVENT_RECORD_KEY_TEMPLATE = "%s_%d";
 
-    public final static String VICROAD_DATA_ARCHIVES_ROOT = "../vicroad_data_archives";
+    // Constants for Timestamp format
+    public final static DateTimeFormatter DATE_TIME_FORMATTER_FOR_FILENAME = DateTimeFormatter.ofPattern(
+            "yyyy-MM-dd_HH-mm-ss");
+
+    public final static DateTimeFormatter DATE_TIME_FORMATTER_FOR_KAFKA = DateTimeFormatter.ofPattern(
+            "yyyy-MM-dd'T'HH:mm:ssXXX");
+
+    // Constants for AWS S3
+    public final static String HERMES_DATA_BUCKET_NAME = "hermes-data-archives";
+
+    // Constants for archiving data
+    public final static String VICROAD_DATA_ARCHIVES_ROOT = "vicroad_data_archives";
 
     public final static String BLUETOOTH_DATA_ARCHIVES_DIR = VICROAD_DATA_ARCHIVES_ROOT + "/bluetooth";
 

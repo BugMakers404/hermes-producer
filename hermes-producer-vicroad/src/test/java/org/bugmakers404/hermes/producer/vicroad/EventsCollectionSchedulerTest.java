@@ -1,22 +1,12 @@
 package org.bugmakers404.hermes.producer.vicroad;
 
-import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.VICROAD_DATA_ARCHIVES_ROOT;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertTrue;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
-import org.bugmakers404.hermes.producer.vicroad.task.AggregatedEventsCollector;
-import org.bugmakers404.hermes.producer.vicroad.task.EventsCollectionScheduler;
-import org.bugmakers404.hermes.producer.vicroad.task.KafkaEventsProducer;
+import org.bugmakers404.hermes.producer.vicroad.service.AggregatedEventsCollector;
+import org.bugmakers404.hermes.producer.vicroad.service.EventsCollectionScheduler;
+import org.bugmakers404.hermes.producer.vicroad.service.KafkaEventsProducer;
+import org.bugmakers404.hermes.producer.vicroad.service.S3Archives;
 import org.bugmakers404.hermes.producer.vicroad.utils.Constants;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -24,6 +14,15 @@ import org.springframework.util.FileSystemUtils;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.VICROAD_DATA_ARCHIVES_ROOT;
+import static org.mockito.Mockito.*;
+import static org.testng.Assert.assertTrue;
 
 public class EventsCollectionSchedulerTest {
 
@@ -33,9 +32,12 @@ public class EventsCollectionSchedulerTest {
   @Mock
   private KafkaEventsProducer kafkaEventsProducer;
 
+  @Mock
+  private S3Archives s3Archives;
+
   private EventsCollectionScheduler eventsCollectionScheduler;
 
-  private final String successResponseContent = "[{'latest_stats': {'interval_start': '2023-03-20T18:08:00+11:00'}}]";
+  private final String successResponseContent = "[{\"latest_stats\": {\"interval_start\": \"2023-03-20T18:08:00+11:00\"}}]";
 
   private final String failedResponseContent = "[]";
 
@@ -44,7 +46,7 @@ public class EventsCollectionSchedulerTest {
   @BeforeMethod
   public void setUp() {
     closeable = MockitoAnnotations.openMocks(this);
-    eventsCollectionScheduler = new EventsCollectionScheduler(aggregatedEventsCollector, kafkaEventsProducer);
+    eventsCollectionScheduler = new EventsCollectionScheduler(aggregatedEventsCollector, kafkaEventsProducer, s3Archives);
   }
 
   @AfterMethod
