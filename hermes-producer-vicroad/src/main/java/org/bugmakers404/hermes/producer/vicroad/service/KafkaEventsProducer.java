@@ -1,18 +1,8 @@
-package org.bugmakers404.hermes.producer.vicroad.task;
-
-import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.BLUETOOTH_DATA_TOPIC_LINKS;
-import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO;
-import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.BLUETOOTH_DATA_TOPIC_ROUTES;
-import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.BLUETOOTH_DATA_TOPIC_SITES;
-import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.DATE_TIME_FORMATTER_FOR_KAFKA;
+package org.bugmakers404.hermes.producer.vicroad.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -21,8 +11,15 @@ import org.springframework.kafka.core.KafkaProducerException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-@Component
+import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Map;
+
+import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.*;
+
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class KafkaEventsProducer {
 
@@ -36,7 +33,7 @@ public class KafkaEventsProducer {
 
   public void sendLinkWithGeoEvents(ZonedDateTime timestamp, String linkWithGeoEvents) throws IOException {
     sendProducerRecords(BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, timestamp.format(DATE_TIME_FORMATTER_FOR_KAFKA),
-        linkWithGeoEvents);
+            linkWithGeoEvents);
   }
 
   public void sendRouteEvents(ZonedDateTime timestamp, String routeEvents) throws IOException {
@@ -58,10 +55,10 @@ public class KafkaEventsProducer {
         if (e.getCause() instanceof KafkaProducerException producerException) {
           ProducerRecord<?, ?> failedRecord = producerException.getFailedProducerRecord();
           log.error("Failed to send message with key={} to topic={} due to: {}", failedRecord.key(),
-              failedRecord.topic(), producerException.getMessage(), producerException);
+                  failedRecord.topic(), producerException.getMessage(), producerException);
         } else {
           log.error("Failed to send message with key={} to topic={} due to: {}", eventRecord.key(), eventRecord.topic(),
-              e.getMessage(), e);
+                  e.getMessage(), e);
         }
       }
     }
@@ -69,7 +66,7 @@ public class KafkaEventsProducer {
   }
 
   private ProducerRecord<String, String> buildProducerRecord(String topic, Map<String, Object> event, String timestamp)
-      throws JsonProcessingException {
+          throws JsonProcessingException {
     String key = Constants.EVENT_RECORD_KEY_TEMPLATE.formatted(timestamp, (Integer) event.get("id"));
     return new ProducerRecord<>(topic, null, key, objectMapper.writeValueAsString(event));
   }

@@ -1,10 +1,8 @@
 package org.bugmakers404.hermes.producer.vicroad;
 
-import static org.mockito.Mockito.verify;
-
 import org.bugmakers404.hermes.producer.vicroad.configs.EventsCollector;
-import org.bugmakers404.hermes.producer.vicroad.task.EventsCollectionScheduler;
-import org.bugmakers404.hermes.producer.vicroad.task.KafkaEventsProducer;
+import org.bugmakers404.hermes.producer.vicroad.service.EventsCollectionScheduler;
+import org.bugmakers404.hermes.producer.vicroad.service.KafkaEventsProducer;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest(classes = org.bugmakers404.hermes.producer.Application.class)
 public class EventsCollectionSchedulerIT extends AbstractTestNGSpringContextTests {

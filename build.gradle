@@ -56,15 +56,8 @@ subprojects {
 
 }
 
-def userName = findProperty('hermesMongoRootUserName').toString()
-def password = findProperty("hermesMongoRootPassword").toString()
-
 dockerCompose {
     projectName = 'hermes-producer'
-
-    environment.put "HERMES_MONGODB_ROOT_USER_NAME", userName
-    environment.put "HERMES_MONGODB_ROOT_USER_PASSWORD", password
-    useComposeFiles = ['docker/local/docker-compose.yaml']
 }
 
 
