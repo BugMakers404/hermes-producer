@@ -1,12 +1,14 @@
 package org.bugmakers404.hermes.producer.vicroad.service;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.bugmakers404.hermes.producer.vicroad.utils.Constants;
-import org.bugmakers404.hermes.producer.vicroad.utils.JsonProcessor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -14,10 +16,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 @Slf4j
 @Configuration
@@ -32,7 +31,7 @@ public class EventsCollectionScheduler {
 
     private final S3Archives s3Archiver;
 
-    private final JsonProcessor jsonProcessor = new JsonProcessor();
+    private final JsonFactory jsonFactory = new JsonFactory();
 
     @Async
     @Scheduled(fixedRate = Constants.BASIC_BLUETOOTH_DATA_DURATION)
@@ -41,7 +40,7 @@ public class EventsCollectionScheduler {
         int retries = 0;
         long startTime = System.currentTimeMillis();
 
-        log.info("Link - start data collection.");
+        log.info("{} - start data collection.", Constants.BLUETOOTH_DATA_TOPIC_LINKS);
 
         while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
 
@@ -49,25 +48,18 @@ public class EventsCollectionScheduler {
             if (response.getStatusLine().getStatusCode() == 200) {
                 entity = response.getEntity();
                 String content = EntityUtils.toString(entity);
-                ZonedDateTime timestamp = jsonProcessor.extractTimestampFromContent(content);
+                OffsetDateTime timestamp = extractTimestampFromEvents(content);
 
-                try {
-                    kafkaEventsProducer.sendLinkEvents(timestamp, content);
-                    s3Archiver.saveStringAsJsonFile(Constants.HERMES_DATA_BUCKET_NAME, Constants.LINKS_FILE_PATH.formatted(timestamp.format(Constants.DATE_TIME_FORMATTER_FOR_FILENAME)), content);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    storeEventsToLocalFiles(content, Constants.LINKS_FILE_PATH.formatted(timestamp.format(Constants.DATE_TIME_FORMATTER_FOR_FILENAME)));
-                }
-
+                kafkaEventsProducer.sendLinkEvents(timestamp, content);
+                s3Archiver.archiveLinkEvents(timestamp, content);
                 return;
             } else {
                 retries++;
-                log.warn("Link - failed to collect data. Retrying...");
+                log.warn("{} - failed to collect data. Retrying...", Constants.BLUETOOTH_DATA_TOPIC_LINKS);
             }
         }
 
-        log.error("Link - Failed to collect data after %d retries!!!".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
+        log.error("{} - Failed to collect data after {} retries!!!", Constants.BLUETOOTH_DATA_TOPIC_LINKS, Constants.BLUETOOTH_DATA_MAX_RETRIES);
     }
 
     @Async
@@ -77,7 +69,7 @@ public class EventsCollectionScheduler {
         int retries = 0;
         long startTime = System.currentTimeMillis();
 
-        log.info("Link with Geo - start data collection.");
+        log.info("{} - start data collection.", Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO);
 
         while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
 
@@ -85,21 +77,18 @@ public class EventsCollectionScheduler {
             if (response.getStatusLine().getStatusCode() == 200) {
                 entity = response.getEntity();
                 String content = EntityUtils.toString(entity);
-
-                ZonedDateTime timestamp = jsonProcessor.extractTimestampFromContent(content);
-                storeEventsToLocalFiles(content, Constants.LINKS_WITH_GEO_FILE_PATH.formatted(timestamp.format(Constants.DATE_TIME_FORMATTER_FOR_FILENAME)));
+                OffsetDateTime timestamp = extractTimestampFromEvents(content);
 
                 kafkaEventsProducer.sendLinkWithGeoEvents(timestamp, content);
-
-                log.info("Link with Geo - succeed to archive data.");
+                s3Archiver.archiveLinkWithGeoEvents(timestamp, content);
                 return;
             } else {
                 retries++;
-                log.warn("Link with Geo - failed to collect data. Retrying...");
+                log.warn("{} - failed to collect data. Retrying...", Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO);
             }
         }
 
-        log.error("Link with Geo - failed to collect data after %d retries!!!".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
+        log.error("{} - failed to collect data after {} retries!!!", Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, Constants.BLUETOOTH_DATA_MAX_RETRIES);
     }
 
     @Async
@@ -109,7 +98,7 @@ public class EventsCollectionScheduler {
         int retries = 0;
         long startTime = System.currentTimeMillis();
 
-        log.info("Route - start data collection.");
+        log.info("{} - start data collection.", Constants.BLUETOOTH_DATA_TOPIC_ROUTES);
 
         while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
 
@@ -117,21 +106,18 @@ public class EventsCollectionScheduler {
             if (response.getStatusLine().getStatusCode() == 200) {
                 entity = response.getEntity();
                 String content = EntityUtils.toString(entity);
-
-                ZonedDateTime timestamp = jsonProcessor.extractTimestampFromContent(content);
-                storeEventsToLocalFiles(content, Constants.ROUTES_FILE_PATH.formatted(timestamp.format(Constants.DATE_TIME_FORMATTER_FOR_FILENAME)));
+                OffsetDateTime timestamp = extractTimestampFromEvents(content);
 
                 kafkaEventsProducer.sendRouteEvents(timestamp, content);
-
-                log.info("Route - succeed to archive data.");
+                s3Archiver.archiveRouteEvents(timestamp, content);
                 return;
             } else {
                 retries++;
-                log.warn("Route - failed to collect data. Retrying...");
+                log.warn("{} - failed to collect data. Retrying...", Constants.BLUETOOTH_DATA_TOPIC_ROUTES);
             }
         }
 
-        log.error("Route - failed to collect data after %d retries!!!".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
+        log.error("{} - failed to collect data after {} retries!!!", Constants.BLUETOOTH_DATA_TOPIC_ROUTES, Constants.BLUETOOTH_DATA_MAX_RETRIES);
     }
 
     @Async
@@ -141,7 +127,7 @@ public class EventsCollectionScheduler {
         int retries = 0;
         long startTime = System.currentTimeMillis();
 
-        log.info("Site - start data collection.");
+        log.info("{} - start data collection.", Constants.BLUETOOTH_DATA_TOPIC_SITES);
 
         while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
 
@@ -149,30 +135,37 @@ public class EventsCollectionScheduler {
             if (response.getStatusLine().getStatusCode() == 200) {
                 entity = response.getEntity();
                 String content = EntityUtils.toString(entity);
+                OffsetDateTime timestamp = extractTimestampFromEvents(content);
 
-                ZonedDateTime timestamp = jsonProcessor.extractTimestampFromContent(content);
-                storeEventsToLocalFiles(content, Constants.SITES_FILE_PATH.formatted(timestamp.format(Constants.DATE_TIME_FORMATTER_FOR_FILENAME)));
 
                 kafkaEventsProducer.sendSiteEvents(timestamp, content);
-
-                log.info("Site - succeed to archive data.");
+                s3Archiver.archiveSiteEvents(timestamp, content);
                 return;
             } else {
                 retries++;
-                log.warn("Site - failed to collect data. Retrying...");
+                log.warn("{} - failed to collect data. Retrying...", Constants.BLUETOOTH_DATA_TOPIC_SITES);
             }
         }
 
-        log.error("Site - failed to collect data after %d retries!!!".formatted(Constants.BLUETOOTH_DATA_MAX_RETRIES));
+        log.error("{} - failed to collect data after {} retries!!!", Constants.BLUETOOTH_DATA_TOPIC_SITES, Constants.BLUETOOTH_DATA_MAX_RETRIES);
     }
 
-    public void storeEventsToLocalFiles(String content, String filePath) {
-        Path targetPath = Paths.get(filePath);
-        try {
-            Files.createDirectories(targetPath.getParent());
-            Files.writeString(targetPath, content);
+    private OffsetDateTime extractTimestampFromEvents(String events) {
+        try (JsonParser parser = jsonFactory.createParser(events)) {
+            JsonToken token;
+            while ((token = parser.nextToken()) != null) {
+                if (token == JsonToken.FIELD_NAME && "interval_start".equals(parser.getCurrentName())) {
+                    parser.nextToken(); // Move to the value of the specified field
+                    String fieldValue = parser.getValueAsString();
+                    if (fieldValue != null && !fieldValue.isEmpty()) {
+                        return OffsetDateTime.parse(fieldValue);
+                    }
+                }
+            }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to store string data to a local file!!!", e);
+            log.error("Failed to extract timestamp from JSON events: {}", e.getMessage(), e);
         }
+
+        return OffsetDateTime.now();
     }
 }
