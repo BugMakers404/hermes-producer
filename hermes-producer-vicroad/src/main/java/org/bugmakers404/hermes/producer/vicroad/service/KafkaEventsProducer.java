@@ -1,20 +1,18 @@
 package org.bugmakers404.hermes.producer.vicroad.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.bugmakers404.hermes.producer.vicroad.utils.Constants;
-import org.springframework.kafka.core.KafkaProducerException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Map;
+import java.time.OffsetDateTime;
 
 import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.*;
 
@@ -23,52 +21,61 @@ import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.*;
 @RequiredArgsConstructor
 public class KafkaEventsProducer {
 
-  public final KafkaTemplate<String, String> kafkaTemplate;
+    public final KafkaTemplate<String, String> kafkaTemplate;
 
-  private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+    private final JsonFactory jsonFactory = new JsonFactory();
 
-  public void sendLinkEvents(ZonedDateTime timestamp, String linkEvents) throws IOException {
-    sendProducerRecords(BLUETOOTH_DATA_TOPIC_LINKS, timestamp.format(DATE_TIME_FORMATTER_FOR_KAFKA), linkEvents);
-  }
+    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
-  public void sendLinkWithGeoEvents(ZonedDateTime timestamp, String linkWithGeoEvents) throws IOException {
-    sendProducerRecords(BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, timestamp.format(DATE_TIME_FORMATTER_FOR_KAFKA),
-            linkWithGeoEvents);
-  }
-
-  public void sendRouteEvents(ZonedDateTime timestamp, String routeEvents) throws IOException {
-    sendProducerRecords(BLUETOOTH_DATA_TOPIC_ROUTES, timestamp.format(DATE_TIME_FORMATTER_FOR_KAFKA), routeEvents);
-  }
-
-  public void sendSiteEvents(ZonedDateTime timestamp, String siteEvents) throws IOException {
-    sendProducerRecords(BLUETOOTH_DATA_TOPIC_SITES, timestamp.format(DATE_TIME_FORMATTER_FOR_KAFKA), siteEvents);
-  }
-
-  private void sendProducerRecords(String topic, String timestamp, String events) throws IOException {
-    List<Map<String, Object>> eventsList = objectMapper.readValue(events, new TypeReference<>() {
-    });
-    for (Map<String, Object> event : eventsList) {
-      ProducerRecord<String, String> eventRecord = buildProducerRecord(topic, event, timestamp);
-      try {
-        kafkaTemplate.send(eventRecord).get();
-      } catch (Exception e) {
-        if (e.getCause() instanceof KafkaProducerException producerException) {
-          ProducerRecord<?, ?> failedRecord = producerException.getFailedProducerRecord();
-          log.error("Failed to send message with key={} to topic={} due to: {}", failedRecord.key(),
-                  failedRecord.topic(), producerException.getMessage(), producerException);
-        } else {
-          log.error("Failed to send message with key={} to topic={} due to: {}", eventRecord.key(), eventRecord.topic(),
-                  e.getMessage(), e);
-        }
-      }
+    public void sendLinkEvents(OffsetDateTime timestamp, String linkEvents) {
+        sendProducerRecords(BLUETOOTH_DATA_TOPIC_LINKS, timestamp.format(DATE_TIME_FORMATTER_FOR_KAFKA), linkEvents);
     }
-    log.info("{} - succeed to send data.", topic);
-  }
 
-  private ProducerRecord<String, String> buildProducerRecord(String topic, Map<String, Object> event, String timestamp)
-          throws JsonProcessingException {
-    String key = Constants.EVENT_RECORD_KEY_TEMPLATE.formatted(timestamp, (Integer) event.get("id"));
-    return new ProducerRecord<>(topic, null, key, objectMapper.writeValueAsString(event));
-  }
+    public void sendLinkWithGeoEvents(OffsetDateTime timestamp, String linkWithGeoEvents) {
+        sendProducerRecords(BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, timestamp.format(DATE_TIME_FORMATTER_FOR_KAFKA),
+                linkWithGeoEvents);
+    }
 
+    public void sendRouteEvents(OffsetDateTime timestamp, String routeEvents) {
+        sendProducerRecords(BLUETOOTH_DATA_TOPIC_ROUTES, timestamp.format(DATE_TIME_FORMATTER_FOR_KAFKA), routeEvents);
+    }
+
+    public void sendSiteEvents(OffsetDateTime timestamp, String siteEvents) {
+        sendProducerRecords(BLUETOOTH_DATA_TOPIC_SITES, timestamp.format(DATE_TIME_FORMATTER_FOR_KAFKA), siteEvents);
+    }
+
+    private void sendProducerRecords(String topic, String timestamp, String events) {
+
+        try (JsonParser parser = objectMapper.getFactory().createParser(events)) {
+            JsonToken token;
+            while ((token = parser.nextToken()) != null) {
+
+                // Chunk an array of JSON strings
+                if (token == JsonToken.START_OBJECT) {
+                    JsonNode eventNode = parser.readValueAsTree();
+                    int id = eventNode.get("id").asInt();
+                    String eventJsonString = objectMapper.writeValueAsString(eventNode);
+
+                    ProducerRecord<String, String> eventRecord = buildProducerRecord(topic, timestamp, id, eventJsonString);
+
+                    // Sync send each event to Kafka cluster
+                    try {
+                        kafkaTemplate.send(eventRecord).get();
+                    } catch (Exception e) {
+                        log.error("{} - Failed to send message with key={} due to: {}", topic, eventRecord.key(), e.getMessage(), e);
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            log.error("{} - An error occurred while parsing the JSON events: {}", topic, e.getMessage(), e);
+        }
+
+        log.info("{} - succeed to send event to Kafka", topic);
+    }
+
+    private ProducerRecord<String, String> buildProducerRecord(String topic, String timestamp, Integer id, String event) {
+        String key = Constants.EVENT_RECORD_KEY_TEMPLATE.formatted(timestamp, id);
+        return new ProducerRecord<>(topic, null, key, event);
+    }
 }

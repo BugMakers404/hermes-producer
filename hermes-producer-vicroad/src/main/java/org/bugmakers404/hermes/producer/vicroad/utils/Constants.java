@@ -18,7 +18,7 @@ public class Constants {
     // Constants for the kafka cluster
     public final static String BLUETOOTH_DATA_TOPIC_LINKS = "vicroad-links";
 
-    public final static String BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO = "vicroad-linksWithGeometry";
+    public final static String BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO = "vicroad-linksWithGeo";
 
     public final static String BLUETOOTH_DATA_TOPIC_ROUTES = "vicroad-routes";
 
