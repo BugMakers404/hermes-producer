@@ -1,6 +1,5 @@
 package org.bugmakers404.hermes.producer.vicroad.service;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -10,9 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.bugmakers404.hermes.producer.vicroad.utils.Constants;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.util.concurrent.CompletableFuture;
 
 import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.*;
 
@@ -23,8 +24,6 @@ public class KafkaEventsProducer {
 
     public final KafkaTemplate<String, String> kafkaTemplate;
 
-    private final JsonFactory jsonFactory = new JsonFactory();
-
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     public void sendLinkEvents(OffsetDateTime timestamp, String linkEvents) {
@@ -32,8 +31,7 @@ public class KafkaEventsProducer {
     }
 
     public void sendLinkWithGeoEvents(OffsetDateTime timestamp, String linkWithGeoEvents) {
-        sendProducerRecords(BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, timestamp.format(DATE_TIME_FORMATTER_FOR_KAFKA),
-                linkWithGeoEvents);
+        sendProducerRecords(BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, timestamp.format(DATE_TIME_FORMATTER_FOR_KAFKA), linkWithGeoEvents);
     }
 
     public void sendRouteEvents(OffsetDateTime timestamp, String routeEvents) {
@@ -58,12 +56,14 @@ public class KafkaEventsProducer {
 
                     ProducerRecord<String, String> eventRecord = buildProducerRecord(topic, timestamp, id, eventJsonString);
 
-                    // Sync send each event to Kafka cluster
-                    try {
-                        kafkaTemplate.send(eventRecord).get();
-                    } catch (Exception e) {
-                        log.error("{} - Failed to send message with key={} due to: {}", topic, eventRecord.key(), e.getMessage(), e);
-                    }
+                    // Async send each event to Kafka cluster
+                    CompletableFuture<SendResult<String, String>> sentResult = kafkaTemplate.send(eventRecord);
+
+                    sentResult.whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            log.error("Failed to send message with key={} to topic={} due to: {}", eventRecord.key(), eventRecord.topic(), ex.getMessage(), ex);
+                        }
+                    });
 
                 }
             }
@@ -71,7 +71,7 @@ public class KafkaEventsProducer {
             log.error("{} - An error occurred while parsing the JSON events: {}", topic, e.getMessage(), e);
         }
 
-        log.info("{} - succeed to send event to Kafka", topic);
+        log.info("{} - succeed to async send events to Kafka", topic);
     }
 
     private ProducerRecord<String, String> buildProducerRecord(String topic, String timestamp, Integer id, String event) {

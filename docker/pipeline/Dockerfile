@@ -1,4 +1,4 @@
-FROM amazoncorretto:17.0.6-al2023
+FROM eclipse-temurin:17.0.6_10-jdk-jammy
 
 WORKDIR /app
 
@@ -7,4 +7,5 @@ COPY ["docker/pipeline/entrypoint.sh", "/entrypoint.sh"]
 
 RUN chmod +x /entrypoint.sh
 
+STOPSIGNAL SIGTERM
 ENTRYPOINT ["/entrypoint.sh"]
