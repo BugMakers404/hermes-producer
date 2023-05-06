@@ -1,8 +1,10 @@
 package org.bugmakers404.hermes.producer.vicroad;
 
+import static org.mockito.Mockito.verify;
+
 import org.bugmakers404.hermes.producer.vicroad.configs.EventsCollector;
-import org.bugmakers404.hermes.producer.vicroad.service.EventsCollectionScheduler;
-import org.bugmakers404.hermes.producer.vicroad.service.KafkaEventsProducer;
+import org.bugmakers404.hermes.producer.vicroad.service.EventsScheduler;
+import org.bugmakers404.hermes.producer.vicroad.service.KafkaProducerServiceImpl;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +13,11 @@ import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.mockito.Mockito.verify;
-
 @SpringBootTest(classes = org.bugmakers404.hermes.producer.Application.class)
-public class EventsCollectionSchedulerIT extends AbstractTestNGSpringContextTests {
+public class EventsSchedulerIT extends AbstractTestNGSpringContextTests {
 
   @Autowired
-  private EventsCollectionScheduler eventsCollectionScheduler;
+  private EventsScheduler eventsScheduler;
 
   @Mock
   private EventsCollector linksCollector;
@@ -32,7 +32,7 @@ public class EventsCollectionSchedulerIT extends AbstractTestNGSpringContextTest
   private EventsCollector sitesCollector;
 
   @Mock
-  private KafkaEventsProducer kafkaEventsProducer;
+  private KafkaProducerServiceImpl kafkaProducerServiceImpl;
 
   @BeforeMethod
   public void setUp() {
@@ -45,25 +45,25 @@ public class EventsCollectionSchedulerIT extends AbstractTestNGSpringContextTest
 
   @Test(enabled = false)
   public void testCollectLinksData() throws Exception {
-    eventsCollectionScheduler.collectLinksData();
+    eventsScheduler.collectLinksData();
     verify(linksCollector).fetchData();
   }
 
   @Test(enabled = false)
   public void testCollectLinksWithGeometryData() throws Exception {
-    eventsCollectionScheduler.collectLinksWithGeoData();
+    eventsScheduler.collectLinksWithGeoData();
     verify(linksWithGeometryCollector).fetchData();
   }
 
   @Test(enabled = false)
   public void testCollectRoutesData() throws Exception {
-    eventsCollectionScheduler.collectRoutesData();
+    eventsScheduler.collectRoutesData();
     verify(routesCollector).fetchData();
   }
 
   @Test(enabled = false)
   public void testCollectSitesData() throws Exception {
-    eventsCollectionScheduler.collectSitesData();
+    eventsScheduler.collectSitesData();
     verify(sitesCollector).fetchData();
   }
 }
