@@ -34,7 +34,7 @@ public class EventsScheduler {
   private final JsonFactory jsonFactory = new JsonFactory();
 
   @Async
-  @Scheduled(fixedRate = Constants.BASIC_BLUETOOTH_DATA_DURATION)
+  @Scheduled(fixedRate = Constants.BLUETOOTH_DEFAULT_COLLECTION_INTERVAL)
   public void collectLinksData() throws IOException {
     HttpEntity entity;
     int retries = 0;
@@ -42,7 +42,7 @@ public class EventsScheduler {
 
     log.info("{} - start data collection.", Constants.BLUETOOTH_DATA_TOPIC_LINKS);
 
-    while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES
+    while (retries < Constants.BLUETOOTH_MAX_COLLECTION_RETRIES
         && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
 
       HttpResponse response = eventsCollectionFactory.fetchLinksData();
@@ -61,7 +61,7 @@ public class EventsScheduler {
     }
 
     log.error("{} - Failed to collect data after {} retries!!!",
-        Constants.BLUETOOTH_DATA_TOPIC_LINKS, Constants.BLUETOOTH_DATA_MAX_RETRIES);
+        Constants.BLUETOOTH_DATA_TOPIC_LINKS, Constants.BLUETOOTH_MAX_COLLECTION_RETRIES);
   }
 
   @Async
@@ -73,7 +73,7 @@ public class EventsScheduler {
 
     log.info("{} - start data collection.", Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO);
 
-    while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES
+    while (retries < Constants.BLUETOOTH_MAX_COLLECTION_RETRIES
         && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
 
       HttpResponse response = eventsCollectionFactory.fetchLinksWithGeoData();
@@ -93,11 +93,11 @@ public class EventsScheduler {
     }
 
     log.error("{} - failed to collect data after {} retries!!!",
-        Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, Constants.BLUETOOTH_DATA_MAX_RETRIES);
+        Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, Constants.BLUETOOTH_MAX_COLLECTION_RETRIES);
   }
 
   @Async
-  @Scheduled(fixedRate = Constants.BASIC_BLUETOOTH_DATA_DURATION)
+  @Scheduled(fixedRate = Constants.BLUETOOTH_DEFAULT_COLLECTION_INTERVAL)
   public void collectRoutesData() throws IOException {
     HttpEntity entity;
     int retries = 0;
@@ -105,7 +105,7 @@ public class EventsScheduler {
 
     log.info("{} - start data collection.", Constants.BLUETOOTH_DATA_TOPIC_ROUTES);
 
-    while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES
+    while (retries < Constants.BLUETOOTH_MAX_COLLECTION_RETRIES
         && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
 
       HttpResponse response = eventsCollectionFactory.fetchRoutesData();
@@ -124,11 +124,11 @@ public class EventsScheduler {
     }
 
     log.error("{} - failed to collect data after {} retries!!!",
-        Constants.BLUETOOTH_DATA_TOPIC_ROUTES, Constants.BLUETOOTH_DATA_MAX_RETRIES);
+        Constants.BLUETOOTH_DATA_TOPIC_ROUTES, Constants.BLUETOOTH_MAX_COLLECTION_RETRIES);
   }
 
   @Async
-  @Scheduled(fixedRate = Constants.BLUETOOTH_DATA_SITE_DURATION)
+  @Scheduled(fixedRate = Constants.BLUETOOTH_SITE_COLLECTION_INTERVAL)
   public void collectSitesData() throws IOException {
     HttpEntity entity;
     int retries = 0;
@@ -136,7 +136,7 @@ public class EventsScheduler {
 
     log.info("{} - start data collection.", Constants.BLUETOOTH_DATA_TOPIC_SITES);
 
-    while (retries < Constants.BLUETOOTH_DATA_MAX_RETRIES
+    while (retries < Constants.BLUETOOTH_MAX_COLLECTION_RETRIES
         && System.currentTimeMillis() - startTime < Constants.BLUETOOTH_DATA_TIMEOUT) {
 
       HttpResponse response = eventsCollectionFactory.fetchSitesData();
@@ -155,7 +155,7 @@ public class EventsScheduler {
     }
 
     log.error("{} - failed to collect data after {} retries!!!",
-        Constants.BLUETOOTH_DATA_TOPIC_SITES, Constants.BLUETOOTH_DATA_MAX_RETRIES);
+        Constants.BLUETOOTH_DATA_TOPIC_SITES, Constants.BLUETOOTH_MAX_COLLECTION_RETRIES);
   }
 
   private OffsetDateTime extractTimestampFromEvents(String events) {
