@@ -34,15 +34,15 @@ public class S3ClientServiceImpl implements EventsArchiveService {
     try {
 
       saveStringAsJsonFile(Constants.HERMES_DATA_BUCKET_NAME, filePath, linkEvents);
-      log.info("{} - Succeed to archive data in S3 bucket {}",
+      log.info("{} - Succeed to archive events in S3 bucket {}",
           Constants.BLUETOOTH_DATA_TOPIC_LINKS, Constants.HERMES_DATA_BUCKET_NAME);
 
     } catch (Exception e) {
 
-      storeEventsToLocalFiles(Constants.BLUETOOTH_DATA_TOPIC_LINKS, filePath, linkEvents);
-      log.error("{} - Failed to archive data in S3 bucket {}: {}",
+      log.error("{} - Failed to archive events in S3 bucket {}: {}",
           Constants.BLUETOOTH_DATA_TOPIC_LINKS, Constants.HERMES_DATA_BUCKET_NAME, e.getMessage(),
           e);
+      storeEventsToLocalFiles(Constants.BLUETOOTH_DATA_TOPIC_LINKS, filePath, linkEvents);
 
     }
   }
@@ -57,16 +57,16 @@ public class S3ClientServiceImpl implements EventsArchiveService {
     try {
 
       saveStringAsJsonFile(Constants.HERMES_DATA_BUCKET_NAME, filePath, linkWithGeoEvents);
-      log.info("{} - Succeed to archive data in S3 bucket {}",
+      log.info("{} - Succeed to archive events in S3 bucket {}",
           Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, Constants.HERMES_DATA_BUCKET_NAME);
 
     } catch (Exception e) {
 
-      storeEventsToLocalFiles(Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, filePath,
-          linkWithGeoEvents);
-      log.error("{} - Failed to archive data in S3 bucket {}: {}",
+      log.error("{} - Failed to archive events in S3 bucket {}: {}",
           Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, Constants.HERMES_DATA_BUCKET_NAME,
           e.getMessage(), e);
+      storeEventsToLocalFiles(Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, filePath,
+          linkWithGeoEvents);
 
     }
   }
@@ -79,15 +79,15 @@ public class S3ClientServiceImpl implements EventsArchiveService {
     try {
 
       saveStringAsJsonFile(Constants.HERMES_DATA_BUCKET_NAME, filePath, routeEvents);
-      log.info("{} - Succeed to archive data in S3 bucket {}",
+      log.info("{} - Succeed to archive events in S3 bucket {}",
           Constants.BLUETOOTH_DATA_TOPIC_ROUTES, Constants.HERMES_DATA_BUCKET_NAME);
 
     } catch (Exception e) {
 
-      storeEventsToLocalFiles(Constants.BLUETOOTH_DATA_TOPIC_ROUTES, filePath, routeEvents);
-      log.error("{} - Failed to archive data in S3 bucket {}: {}",
+      log.error("{} - Failed to archive events in S3 bucket {}: {}",
           Constants.BLUETOOTH_DATA_TOPIC_ROUTES, Constants.HERMES_DATA_BUCKET_NAME, e.getMessage(),
           e);
+      storeEventsToLocalFiles(Constants.BLUETOOTH_DATA_TOPIC_ROUTES, filePath, routeEvents);
 
     }
   }
@@ -101,15 +101,15 @@ public class S3ClientServiceImpl implements EventsArchiveService {
     try {
 
       saveStringAsJsonFile(Constants.HERMES_DATA_BUCKET_NAME, filePath, siteEvents);
-      log.info("{} - Succeed to archive data in S3 bucket {}",
+      log.info("{} - Succeed to archive events in S3 bucket {}",
           Constants.BLUETOOTH_DATA_TOPIC_SITES, Constants.HERMES_DATA_BUCKET_NAME);
 
     } catch (Exception e) {
 
-      storeEventsToLocalFiles(Constants.BLUETOOTH_DATA_TOPIC_SITES, filePath, siteEvents);
-      log.error("{} - Failed to archive data in S3 bucket {}: {}",
+      log.error("{} - Failed to archive events in S3 bucket {}: {}",
           Constants.BLUETOOTH_DATA_TOPIC_SITES, Constants.HERMES_DATA_BUCKET_NAME,
           e.getMessage(), e);
+      storeEventsToLocalFiles(Constants.BLUETOOTH_DATA_TOPIC_SITES, filePath, siteEvents);
 
     }
   }
@@ -131,8 +131,9 @@ public class S3ClientServiceImpl implements EventsArchiveService {
     try {
       Files.createDirectories(targetPath.getParent());
       Files.writeString(targetPath, content);
+      log.info("{} - Succeed to archive the failed events locally at {}", topic, filePath);
     } catch (IOException e) {
-      log.error("{} - Failed to archive data locally: {}", topic, e.getMessage(), e);
+      log.error("{} - Failed to archive the failed events locally: {}", topic, e.getMessage(), e);
     }
   }
 }

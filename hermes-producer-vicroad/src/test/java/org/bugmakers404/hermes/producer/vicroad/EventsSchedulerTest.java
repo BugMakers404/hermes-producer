@@ -89,7 +89,8 @@ public class EventsSchedulerTest {
 
     when(eventsCollectionFactory.fetchLinksData()).thenReturn(failResponse);
     eventsScheduler.collectLinksData();
-    verify(eventsCollectionFactory, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchLinksData();
+    verify(eventsCollectionFactory,
+        times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchLinksData();
   }
 
   @Test
@@ -108,7 +109,7 @@ public class EventsSchedulerTest {
     when(eventsCollectionFactory.fetchLinksWithGeoData()).thenReturn(failResponse);
     eventsScheduler.collectLinksWithGeoData();
     verify(eventsCollectionFactory,
-        times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchLinksWithGeoData();
+        times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchLinksWithGeoData();
   }
 
   @Test
@@ -126,7 +127,8 @@ public class EventsSchedulerTest {
 
     when(eventsCollectionFactory.fetchRoutesData()).thenReturn(failResponse);
     eventsScheduler.collectRoutesData();
-    verify(eventsCollectionFactory, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchRoutesData();
+    verify(eventsCollectionFactory,
+        times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchRoutesData();
   }
 
   @Test
@@ -144,7 +146,8 @@ public class EventsSchedulerTest {
 
     when(eventsCollectionFactory.fetchSitesData()).thenReturn(failResponse);
     eventsScheduler.collectSitesData();
-    verify(eventsCollectionFactory, times(Constants.BLUETOOTH_DATA_MAX_RETRIES)).fetchSitesData();
+    verify(eventsCollectionFactory,
+        times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchSitesData();
   }
 
 }
