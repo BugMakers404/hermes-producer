@@ -14,66 +14,69 @@ env:
 jobs:
   testAndBuild:
     runs-on: ubuntu-22.04
-    
+    strategy:
+      matrix:
+        architecture: [ x86 ]
+
     steps:
-    - name: Check out the current branch
-      uses: actions/checkout@v3
+      - name: Check out the current branch
+        uses: actions/checkout@v3
 
-    # secrets.APPLICATION_PROPERTIES is the content instead of the path to application.properties
-    - name: Create application.properties
-      run:
-        echo "${{ secrets.APPLICATION_PROPERTIES }}" > application.properties
-        
-    - name: Create container resources required by hermes-producer
-      run:
-        docker compose -f docker/local/docker-compose.yaml up -d
-      
-    - name: Build with Gradle
-      run: |
-        GIT_VERSION=$(git describe --tag --always)
-        docker run --network host \
-                   --rm --mount type=bind,source="$(pwd)",target=/home/gradle/project \
-                   -w /home/gradle/project gradle:${{ env.GRADLE_VERSION }}-jdk${{ env.JDK_VERSION }}-jammy \
-                   bash -c "gradle -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xms256M -Xmx1g' \
-                                   -PhermesProducerAppProps=/home/gradle/project/application.properties \
-                                   -PisRunningInPipeline=true \
-                                   -i clean check build"
+      # secrets.APPLICATION_PROPERTIES is the content instead of the path to application.properties
+      - name: Create application.properties
+        run:
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > application.properties
 
-    - name: Upload test results
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results
-        path: '**/TEST-*.xml'
-        
-    - name: Clean up Docker resources
-      if: always()
-      run: docker compose -f docker/local/docker-compose.yaml down
-    
-    - name: Remove Remove application.properties
-      if: always()
-      run:
-        rm application.properties
-      
+      - name: Create container resources required by hermes-producer
+        run:
+          docker compose -f docker/local/docker-compose.yaml up -d
+
+      - name: Build with Gradle
+        run: |
+          GIT_VERSION=$(git describe --tag --always)
+          docker run --network host \
+                     --rm --mount type=bind,source="$(pwd)",target=/home/gradle/project \
+                     -w /home/gradle/project gradle:${{ env.GRADLE_VERSION }}-jdk${{ env.JDK_VERSION }}-jammy \
+                     bash -c "gradle -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xms256M -Xmx1g' \
+                                     -PhermesProducerAppProps=/home/gradle/project/application.properties \
+                                     -PisRunningInPipeline=true \
+                                     -i clean check build"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: '**/TEST-*.xml'
+
+      - name: Clean up Docker resources
+        if: always()
+        run: docker compose -f docker/local/docker-compose.yaml down
+
+      - name: Remove Remove application.properties
+        if: always()
+        run:
+          rm application.properties
+
   publishTestResults:
     runs-on: ubuntu-22.04
     needs: testAndBuild
     if: always()
 
     steps:
-    - name: Check out the current branch
-      uses: actions/checkout@v3
+      - name: Check out the current branch
+        uses: actions/checkout@v3
 
-    - name: Download test results
-      uses: actions/download-artifact@v3
-      with:
-        name: test-results
+      - name: Download test results
+        uses: actions/download-artifact@v3
+        with:
+          name: test-results
 
-    - name: Display test results summary
-      uses: dorny/test-reporter@v1.6.0
-      with:
-        name: Test Results
-        path: '**/TEST-*.xml'
-        reporter: java-junit
+      - name: Display test results summary
+        uses: dorny/test-reporter@v1.6.0
+        with:
+          name: Test Results
+          path: '**/TEST-*.xml'
+          reporter: java-junit
 
     
