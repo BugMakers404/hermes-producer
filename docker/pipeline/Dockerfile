@@ -6,6 +6,4 @@ COPY ["hermes-producer-main/build/libs/hermes-producer-main-*.jar", "./hermes-pr
 COPY ["docker/pipeline/entrypoint.sh", "/entrypoint.sh"]
 
 RUN chmod +x /entrypoint.sh
-
-STOPSIGNAL SIGTERM
 ENTRYPOINT ["/entrypoint.sh"]

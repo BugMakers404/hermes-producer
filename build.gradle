@@ -47,7 +47,7 @@ subprojects {
 
     test {
         useTestNG()
-        def appProps = findProperty('hermesProducerAppProps')
+        def appProps = findProperty('hermesAppProps')
         if (appProps != null) {
             systemProperty "spring.config.additional-location", appProps
         }
@@ -58,6 +58,7 @@ subprojects {
 
 dockerCompose {
     projectName = 'hermes-producer'
+    useComposeFiles = ['docker/local/docker-compose.yaml']
 }
 
 

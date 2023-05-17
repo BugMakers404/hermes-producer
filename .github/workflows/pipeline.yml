@@ -4,19 +4,26 @@ on:
   push:
     branches:
       - '**'
+    paths-ignore:
+      - 'README.md'
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - 'README.md'
 
 env:
   GRADLE_VERSION: "8.1.1"
   JDK_VERSION: "17"
+  UBUNTU_VERSION: "22.04"
+  ARCHITECTURE: "x86"
+
 
 jobs:
   testAndBuild:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-${{ env.UBUNTU_VERSION }}
     strategy:
       matrix:
-        architecture: [ x86 ]
+        architecture: [ ${ { env.ARCHITECTURE } } ]
 
     steps:
       - name: Check out the current branch
@@ -59,8 +66,8 @@ jobs:
           rm application.properties
 
   publishTestResults:
-    runs-on: ubuntu-22.04
-    needs: testAndBuild
+    runs-on: ubuntu-${{ env.UBUNTU_VERSION }}
+    needs: [ testAndBuild ]
     if: always()
 
     steps:
@@ -78,5 +85,72 @@ jobs:
           name: Test Results
           path: '**/TEST-*.xml'
           reporter: java-junit
+
+  buildAndPush:
+    runs-on: ubuntu-${{ env.UBUNTU_VERSION }}
+    strategy:
+      matrix:
+        architecture: [ ${ { env.ARCHITECTURE } } ]
+
+    needs: [ testAndBuild ]
+    if: github.ref == 'refs/heads/main' # Only run this job for pushes to the main branch
+
+    steps:
+      - name: Check out the current branch
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:latest
+
+  deploy:
+    runs-on: ubuntu-${{ env.UBUNTU_VERSION }}
+    needs: [ buildAndPush ]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Check out the current branch
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to AWS Lightsail
+        uses: aws-actions/aws-cli@v2
+        with:
+          entrypoint: /bin/sh
+          args: |
+            -c "
+            echo '${{ secrets.AWS_SSH_PRIVATE_KEY }}' > my_key.pem &&
+            chmod 600 my_key.pem &&
+            ssh -o StrictHostKeyChecking=no -i my_key.pem ubuntu@${{ secrets.LIGHTSAIL_IP }} '
+              docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:latest &&
+              CONTAINER_ID=$(docker ps -q --filter ancestor=${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:latest) &&
+              if [ -n \"$CONTAINER_ID\" ]; then
+                docker stop $CONTAINER_ID &&
+                docker rm $CONTAINER_ID
+              fi &&
+              docker run -d --name hermes-producer \
+                         --mount type=bind,source=/home/ubuntu/app/application.properties,destination=/app/application.properties \
+                         --mount type=bind,source=/home/ubuntu/app/data,destination=/app/vicroad_data_archives \
+                         --mount type=bind,source=/home/ubuntu/.aws,destination=/root/.aws \
+                         ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:latest'
+            "
+
+
+
 
     

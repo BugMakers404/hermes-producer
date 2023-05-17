@@ -17,7 +17,7 @@ bootRun {
 
     // Apply the external application.properties
     // Please note do not use hermesProducerAppProps directly since CI server does not store it
-    def appProps = findProperty('hermesProducerAppProps')
+    def appProps = findProperty('hermesAppProps')
     if (appProps != null) {
         systemProperty "spring.config.additional-location", appProps
     }
