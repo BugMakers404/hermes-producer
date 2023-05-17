@@ -15,15 +15,11 @@ env:
   GRADLE_VERSION: "8.1.1"
   JDK_VERSION: "17"
   UBUNTU_VERSION: "22.04"
-  ARCHITECTURE: "x86"
 
 
 jobs:
   testAndBuild:
     runs-on: ubuntu-${{ env.UBUNTU_VERSION }}
-    strategy:
-      matrix:
-        architecture: [ ${ { env.ARCHITECTURE } } ]
 
     steps:
       - name: Check out the current branch
@@ -88,9 +84,6 @@ jobs:
 
   buildAndPush:
     runs-on: ubuntu-${{ env.UBUNTU_VERSION }}
-    strategy:
-      matrix:
-        architecture: [ ${ { env.ARCHITECTURE } } ]
 
     needs: [ testAndBuild ]
     if: github.ref == 'refs/heads/main' # Only run this job for pushes to the main branch
