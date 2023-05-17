@@ -98,7 +98,7 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ env.DOCKER_HUB_USERNAME }}
+          username: ${{ vars.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
       - name: Build and push Docker image
@@ -106,7 +106,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          tags: ${{ vars.DOCKER_HUB_USERNAME }}/${{ vars.IMAGE_NAME }}:latest
 
   deploy:
     name: Deploy the Latest Image
@@ -135,8 +135,8 @@ jobs:
             echo '${{ secrets.AWS_SSH_PRIVATE_KEY }}' > my_key.pem &&
             chmod 600 my_key.pem &&
             ssh -o StrictHostKeyChecking=no -i my_key.pem ubuntu@${{ secrets.LIGHTSAIL_IP }} '
-              docker pull ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest &&
-              CONTAINER_ID=$(docker ps -q --filter ancestor=${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest) &&
+              docker pull ${{ vars.DOCKER_HUB_USERNAME }}/${{ vars.IMAGE_NAME }}:latest &&
+              CONTAINER_ID=$(docker ps -q --filter ancestor=${{ vars.DOCKER_HUB_USERNAME }}/${{ vars.IMAGE_NAME }}:latest) &&
               if [ -n \"$CONTAINER_ID\" ]; then
                 docker stop $CONTAINER_ID &&
                 docker rm $CONTAINER_ID
@@ -145,7 +145,7 @@ jobs:
                          --mount type=bind,source=/home/ubuntu/app/application.properties,destination=/app/application.properties \
                          --mount type=bind,source=/home/ubuntu/app/data,destination=/app/vicroad_data_archives \
                          --mount type=bind,source=/home/ubuntu/.aws,destination=/root/.aws \
-                         ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest'
+                         ${{ vars.DOCKER_HUB_USERNAME }}/${{ vars.IMAGE_NAME }}:latest'
             "
 
 
