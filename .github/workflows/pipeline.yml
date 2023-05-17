@@ -17,7 +17,8 @@ env:
 
 
 jobs:
-  testAndBuild:
+  buildAndTest:
+    name: Build via Gradle and Run Tests
     runs-on: ubuntu-22.04
 
     steps:
@@ -40,7 +41,7 @@ jobs:
                      --rm --mount type=bind,source="$(pwd)",target=/home/gradle/project \
                      -w /home/gradle/project gradle:${{ env.GRADLE_VERSION }}-jdk${{ env.JDK_VERSION }}-jammy \
                      bash -c "gradle -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xms256M -Xmx1g' \
-                                     -PhermesProducerAppProps=/home/gradle/project/application.properties \
+                                     -PhermesAppProps=/home/gradle/project/application.properties \
                                      -PisRunningInPipeline=true \
                                      -i clean check build"
 
@@ -61,8 +62,10 @@ jobs:
           rm application.properties
 
   publishTestResults:
+    name: Publish Test Results
     runs-on: ubuntu-22.04
-    needs: [ testAndBuild ]
+
+    needs: [ buildAndTest ]
     if: always()
 
     steps:
@@ -82,9 +85,10 @@ jobs:
           reporter: java-junit
 
   buildAndPush:
+    name: Build the Latest Image and Push
     runs-on: ubuntu-22.04
 
-    needs: [ testAndBuild ]
+    needs: [ buildAndTest ]
     if: github.ref == 'refs/heads/main' # Only run this job for pushes to the main branch
 
     steps:
@@ -105,7 +109,9 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:latest
 
   deploy:
+    name: Deploy the Latest Image
     runs-on: ubuntu-22.04
+
     needs: [ buildAndPush ]
     if: github.ref == 'refs/heads/main'
 
