@@ -14,11 +14,15 @@ on:
 env:
   GRADLE_VERSION: "8.1.1"
   JDK_VERSION: "17"
+  DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+  IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
+  AWS_SSH_PRIVATE_KEY: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
+  LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_IP }}
 
 
 jobs:
   buildAndTest:
-    name: Build via Gradle and Run Tests
+    name: Build and Run Tests
     runs-on: ubuntu-22.04
 
     steps:
@@ -34,15 +38,13 @@ jobs:
         run:
           docker compose -f docker/local/docker-compose.yaml up -d
 
-      - name: Build with Gradle
+      - name: Build and Test with Gradle
         run: |
-          GIT_VERSION=$(git describe --tag --always)
           docker run --network host \
-                     --rm --mount type=bind,source="$(pwd)",target=/home/gradle/project \
+                     --rm --mount type=bind,source=$GITHUB_WORKSPACE,target=/home/gradle/project \
                      -w /home/gradle/project gradle:${{ env.GRADLE_VERSION }}-jdk${{ env.JDK_VERSION }}-jammy \
-                     bash -c "gradle -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xms256M -Xmx1g' \
+                     bash -c "gradle -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xms512M -Xmx1g' \
                                      -PhermesAppProps=/home/gradle/project/application.properties \
-                                     -PisRunningInPipeline=true \
                                      -i clean check build"
 
       - name: Upload test results
@@ -56,10 +58,11 @@ jobs:
         if: always()
         run: docker compose -f docker/local/docker-compose.yaml down
 
-      - name: Remove Remove application.properties
+      - name: Remove application.properties
         if: always()
         run:
           rm application.properties
+
 
   publishTestResults:
     name: Publish Test Results
@@ -84,72 +87,66 @@ jobs:
           path: '**/TEST-*.xml'
           reporter: java-junit
 
+
   buildAndPush:
-    name: Build the Latest Image and Push
+    name: Build and Push the Image
     runs-on: ubuntu-22.04
 
     needs: [ buildAndTest ]
-    if: github.ref == 'refs/heads/main' # Only run this job for pushes to the main branch
+    if: >
+      (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged)
 
     steps:
       - name: Check out the current branch
         uses: actions/checkout@v3
 
+      - name: Get the git version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(git describe --tags --always)
+
+      - name: Build with Gradle
+        run: |
+          docker run --network host \
+                     --rm --mount type=bind,source=$GITHUB_WORKSPACE,target=/home/gradle/project \
+                     -w /home/gradle/project gradle:${{ env.GRADLE_VERSION }}-jdk${{ env.JDK_VERSION }}-jammy \
+                     bash -c "gradle -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xms512M -Xmx1g' \
+                                     -i clean check build -x test"
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ vars.DOCKER_HUB_USERNAME }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
-          dockerfile: docker/pipeline/Dockerfile
+          file: docker/pipeline/Dockerfile
           push: true
-          tags: ${{ vars.DOCKER_HUB_USERNAME }}/${{ vars.IMAGE_NAME }}:latest
+          tags: |
+            ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
+
 
   deploy:
     name: Deploy the Latest Image
     runs-on: ubuntu-22.04
 
     needs: [ buildAndPush ]
-    if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Check out the current branch
-        uses: actions/checkout@v3
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
       - name: Deploy to AWS Lightsail
-        uses: aws-actions/aws-cli@v2
-        with:
-          entrypoint: /bin/sh
-          args: |
-            -c "
-            echo '${{ secrets.AWS_SSH_PRIVATE_KEY }}' > my_key.pem &&
-            chmod 600 my_key.pem &&
-            ssh -o StrictHostKeyChecking=no -i my_key.pem ubuntu@${{ secrets.LIGHTSAIL_IP }} '
-              docker pull ${{ vars.DOCKER_HUB_USERNAME }}/${{ vars.IMAGE_NAME }}:latest &&
-              CONTAINER_ID=$(docker ps -q --filter ancestor=${{ vars.DOCKER_HUB_USERNAME }}/${{ vars.IMAGE_NAME }}:latest) &&
-              if [ -n \"$CONTAINER_ID\" ]; then
-                docker stop $CONTAINER_ID &&
-                docker rm $CONTAINER_ID
-              fi &&
-              docker run -d --name hermes-producer \
-                         --mount type=bind,source=/home/ubuntu/app/application.properties,destination=/app/application.properties \
-                         --mount type=bind,source=/home/ubuntu/app/data,destination=/app/vicroad_data_archives \
-                         --mount type=bind,source=/home/ubuntu/.aws,destination=/root/.aws \
-                         ${{ vars.DOCKER_HUB_USERNAME }}/${{ vars.IMAGE_NAME }}:latest'
-            "
-
-
-
-
-    
+        run: |
+          echo "${{ env.AWS_SSH_PRIVATE_KEY }}" > my_key.pem
+          chmod 600 my_key.pem
+          ssh -o StrictHostKeyChecking=no -i my_key.pem ubuntu@${{ env.LIGHTSAIL_IP }} '
+            docker pull ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest &&
+            docker rm -f ${{ env.IMAGE_NAME }} || true &&
+            docker run -d --name ${{ env.IMAGE_NAME }} \
+                       --mount type=bind,source=/home/ubuntu/app/application.properties,destination=/app/application.properties,readonly \
+                       --mount type=bind,source=/home/ubuntu/app/data,destination=/app/vicroad_data_archives \
+                       --mount type=bind,source=/home/ubuntu/.aws,destination=/root/.aws,readonly \
+                       ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          '

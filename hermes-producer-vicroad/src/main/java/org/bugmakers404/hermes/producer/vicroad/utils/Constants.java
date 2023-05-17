@@ -32,7 +32,7 @@ public class Constants {
 
   // Constants for Timestamp format
   public final static DateTimeFormatter DATE_TIME_FORMATTER_FOR_FILENAME = DateTimeFormatter.ofPattern(
-      "yyyy-MM-dd_HH-mm-ss");
+          "yyyy-MM-dd_HH-mm-ss_x");
 
   public final static DateTimeFormatter DATE_TIME_FORMATTER_FOR_KAFKA = DateTimeFormatter.ofPattern(
       "yyyy-MM-dd'T'HH:mm:ssXXX");
