@@ -135,8 +135,8 @@ jobs:
             echo '${{ secrets.AWS_SSH_PRIVATE_KEY }}' > my_key.pem &&
             chmod 600 my_key.pem &&
             ssh -o StrictHostKeyChecking=no -i my_key.pem ubuntu@${{ secrets.LIGHTSAIL_IP }} '
-              docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:latest &&
-              CONTAINER_ID=$(docker ps -q --filter ancestor=${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:latest) &&
+              docker pull ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest &&
+              CONTAINER_ID=$(docker ps -q --filter ancestor=${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest) &&
               if [ -n \"$CONTAINER_ID\" ]; then
                 docker stop $CONTAINER_ID &&
                 docker rm $CONTAINER_ID
@@ -145,7 +145,7 @@ jobs:
                          --mount type=bind,source=/home/ubuntu/app/application.properties,destination=/app/application.properties \
                          --mount type=bind,source=/home/ubuntu/app/data,destination=/app/vicroad_data_archives \
                          --mount type=bind,source=/home/ubuntu/.aws,destination=/root/.aws \
-                         ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:latest'
+                         ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest'
             "
 
 
