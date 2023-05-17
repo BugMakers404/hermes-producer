@@ -21,7 +21,10 @@ subprojects {
 
     def versionDetails = versionDetails()
     def versionSuffix = project.hasProperty('release') ? '-RELEASE' : '-SNAPSHOT'
-    version = versionDetails.lastTag + versionSuffix
+    def isRunningInPipeline = project.findProperty('isRunningInPipeline') == 'true'
+    if (!isRunningInPipeline) {
+        version = versionDetails.lastTag + versionSuffix
+    }
 
     repositories {
         mavenCentral()

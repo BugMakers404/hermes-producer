@@ -45,6 +45,7 @@ jobs:
                      -w /home/gradle/project gradle:${{ env.GRADLE_VERSION }}-jdk${{ env.JDK_VERSION }}-jammy \
                      bash -c "gradle -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xms512M -Xmx1g' \
                                      -PhermesAppProps=/home/gradle/project/application.properties \
+                                     -PisRunningInPipeline=true \
                                      -i clean check build"
 
       - name: Upload test results
@@ -111,6 +112,7 @@ jobs:
                      --rm --mount type=bind,source=$GITHUB_WORKSPACE,target=/home/gradle/project \
                      -w /home/gradle/project gradle:${{ env.GRADLE_VERSION }}-jdk${{ env.JDK_VERSION }}-jammy \
                      bash -c "gradle -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xms512M -Xmx1g' \
+                                     -PisRunningInPipeline=true \
                                      -i clean check build -x test"
 
       - name: Log in to Docker Hub
