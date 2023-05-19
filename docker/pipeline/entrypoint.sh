@@ -4,4 +4,4 @@
 
 export JAVA_OPTS="${JAVA_OPTS} -XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport"
 
-exec java ${JAVA_OPTS} -jar hermes-producer.jar --spring.profiles.active=prod
+exec java ${JAVA_OPTS} -jar hermes-producer.jar
