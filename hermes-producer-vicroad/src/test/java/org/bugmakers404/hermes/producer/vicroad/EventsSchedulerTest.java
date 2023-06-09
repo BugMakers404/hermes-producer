@@ -1,16 +1,5 @@
 package org.bugmakers404.hermes.producer.vicroad;
 
-import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.VICROAD_DATA_ARCHIVES_ROOT;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertTrue;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
@@ -26,15 +15,27 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.VICROAD_DATA_ARCHIVES_ROOT;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.testng.Assert.assertTrue;
+
 public class EventsSchedulerTest {
 
-  @Mock
-  private EventsCollectionFactory eventsCollectionFactory;
+    @Mock
+    private EventsCollectionFactory eventsCollectionFactory;
 
-  @Mock
-  private KafkaProducerServiceImpl kafkaProducerServiceImpl;
+    @Mock
+    private KafkaProducerServiceImpl kafkaProducerServiceImpl;
 
-  @Mock
+    @Mock
   private S3ClientServiceImpl s3ClientServiceImpl;
 
   private EventsScheduler eventsScheduler;
@@ -47,9 +48,9 @@ public class EventsSchedulerTest {
 
   @BeforeMethod
   public void setUp() {
-    closeable = MockitoAnnotations.openMocks(this);
-    eventsScheduler = new EventsScheduler(eventsCollectionFactory, kafkaProducerServiceImpl,
-        s3ClientServiceImpl);
+      closeable = MockitoAnnotations.openMocks(this);
+      eventsScheduler = new EventsScheduler(eventsCollectionFactory, kafkaProducerServiceImpl,
+              s3ClientServiceImpl);
   }
 
   @AfterMethod
@@ -88,9 +89,9 @@ public class EventsSchedulerTest {
     BasicHttpResponse failResponse = createMockedHttpResponse(500, failedResponseContent);
 
     when(eventsCollectionFactory.fetchLinksData()).thenReturn(failResponse);
-    eventsScheduler.collectLinksData();
-    verify(eventsCollectionFactory,
-        times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchLinksData();
+      eventsScheduler.collectLinksData();
+      verify(eventsCollectionFactory,
+              times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchLinksData();
   }
 
   @Test
@@ -107,9 +108,9 @@ public class EventsSchedulerTest {
     BasicHttpResponse failResponse = createMockedHttpResponse(500, failedResponseContent);
 
     when(eventsCollectionFactory.fetchLinksWithGeoData()).thenReturn(failResponse);
-    eventsScheduler.collectLinksWithGeoData();
-    verify(eventsCollectionFactory,
-        times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchLinksWithGeoData();
+      eventsScheduler.collectLinksWithGeoData();
+      verify(eventsCollectionFactory,
+              times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchLinksWithGeoData();
   }
 
   @Test
@@ -126,9 +127,9 @@ public class EventsSchedulerTest {
     BasicHttpResponse failResponse = createMockedHttpResponse(500, failedResponseContent);
 
     when(eventsCollectionFactory.fetchRoutesData()).thenReturn(failResponse);
-    eventsScheduler.collectRoutesData();
-    verify(eventsCollectionFactory,
-        times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchRoutesData();
+      eventsScheduler.collectRoutesData();
+      verify(eventsCollectionFactory,
+              times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchRoutesData();
   }
 
   @Test
@@ -145,9 +146,9 @@ public class EventsSchedulerTest {
     BasicHttpResponse failResponse = createMockedHttpResponse(500, failedResponseContent);
 
     when(eventsCollectionFactory.fetchSitesData()).thenReturn(failResponse);
-    eventsScheduler.collectSitesData();
-    verify(eventsCollectionFactory,
-        times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchSitesData();
+      eventsScheduler.collectSitesData();
+      verify(eventsCollectionFactory,
+              times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchSitesData();
   }
 
 }

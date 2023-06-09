@@ -35,7 +35,7 @@ public class Constants {
           "yyyy-MM-dd_HH-mm-ssx");
 
   public final static DateTimeFormatter DATE_TIME_FORMATTER_FOR_KAFKA = DateTimeFormatter.ofPattern(
-      "yyyy-MM-dd'T'HH:mm:ssXXX");
+          "yyyy-MM-dd'T'HH:mm:ssXXX");
 
   // Constants for AWS S3
   public final static String HERMES_DATA_BUCKET_NAME = "hermes-data-archives";
@@ -43,18 +43,18 @@ public class Constants {
   // Constants for archiving data
   public final static String VICROAD_DATA_ARCHIVES_ROOT = "vicroad_data_archives";
 
-  public final static String VICROAD_DATA_ARCHIVE_COMMON_DIR =
-      VICROAD_DATA_ARCHIVES_ROOT + "/common";
+    public final static String VICROAD_DATA_ARCHIVE_COMMON_DIR =
+            VICROAD_DATA_ARCHIVES_ROOT + "/common";
 
-  public final static String BLUETOOTH_DATA_ARCHIVES_DIR =
-      VICROAD_DATA_ARCHIVE_COMMON_DIR + "/bluetooth";
+    public final static String BLUETOOTH_DATA_ARCHIVES_DIR =
+            VICROAD_DATA_ARCHIVE_COMMON_DIR + "/bluetooth";
 
   public final static String LINKS_ARCHIVES_DIR = BLUETOOTH_DATA_ARCHIVES_DIR + "/links";
 
   public final static String LINKS_FILE_PATH = LINKS_ARCHIVES_DIR + "/%s.json";
 
-  public final static String LINKS_WITH_GEO_ARCHIVES_DIR =
-      BLUETOOTH_DATA_ARCHIVES_DIR + "/links_with_geo";
+    public final static String LINKS_WITH_GEO_ARCHIVES_DIR =
+            BLUETOOTH_DATA_ARCHIVES_DIR + "/links_with_geo";
 
   public final static String LINKS_WITH_GEO_FILE_PATH = LINKS_WITH_GEO_ARCHIVES_DIR + "/%s.json";
 

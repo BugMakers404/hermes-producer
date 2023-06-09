@@ -25,15 +25,15 @@ public class EventsCollectionFactory implements EventsCollectionService {
   private final EventsCollector sitesCollector;
 
   public EventsCollectionFactory(
-      @NonNull @Qualifier("linksCollector") EventsCollector linksCollector,
-      @NonNull @Qualifier("linksWithGeometryCollector") EventsCollector linksWithGeometryCollector,
-      @NonNull @Qualifier("routesCollector") EventsCollector routesCollector,
-      @NonNull @Qualifier("sitesCollector") EventsCollector sitesCollector) {
+          @NonNull @Qualifier("linksCollector") EventsCollector linksCollector,
+          @NonNull @Qualifier("linksWithGeometryCollector") EventsCollector linksWithGeometryCollector,
+          @NonNull @Qualifier("routesCollector") EventsCollector routesCollector,
+          @NonNull @Qualifier("sitesCollector") EventsCollector sitesCollector) {
 
-    this.linksCollector = linksCollector;
-    this.linksWithGeometryCollector = linksWithGeometryCollector;
-    this.routesCollector = routesCollector;
-    this.sitesCollector = sitesCollector;
+      this.linksCollector = linksCollector;
+      this.linksWithGeometryCollector = linksWithGeometryCollector;
+      this.routesCollector = routesCollector;
+      this.sitesCollector = sitesCollector;
   }
 
   @Override
@@ -41,8 +41,8 @@ public class EventsCollectionFactory implements EventsCollectionService {
     try {
       return this.linksCollector.fetchData();
     } catch (Exception e) {
-      log.error("{} - Failed to fetch data from the platform: {}",
-          Constants.BLUETOOTH_DATA_TOPIC_LINKS, e.getMessage(), e);
+        log.error("{} - Failed to fetch data from the platform: {}",
+                Constants.BLUETOOTH_DATA_TOPIC_LINKS, e.getMessage(), e);
       return getAFailedResponse();
     }
   }
@@ -52,8 +52,8 @@ public class EventsCollectionFactory implements EventsCollectionService {
     try {
       return this.linksWithGeometryCollector.fetchData();
     } catch (Exception e) {
-      log.error("{} - Failed to fetch data from the platform: {}",
-          Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, e.getMessage(), e);
+        log.error("{} - Failed to fetch data from the platform: {}",
+                Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO, e.getMessage(), e);
       return getAFailedResponse();
     }
   }
@@ -63,8 +63,8 @@ public class EventsCollectionFactory implements EventsCollectionService {
     try {
       return this.routesCollector.fetchData();
     } catch (Exception e) {
-      log.error("{} - Failed to fetch data from the platform: {}",
-          Constants.BLUETOOTH_DATA_TOPIC_ROUTES, e.getMessage(), e);
+        log.error("{} - Failed to fetch data from the platform: {}",
+                Constants.BLUETOOTH_DATA_TOPIC_ROUTES, e.getMessage(), e);
       return getAFailedResponse();
     }
   }
@@ -74,15 +74,15 @@ public class EventsCollectionFactory implements EventsCollectionService {
     try {
       return this.sitesCollector.fetchData();
     } catch (Exception e) {
-      log.error("{} - Failed to fetch data from the platform: {}",
-          Constants.BLUETOOTH_DATA_TOPIC_SITES, e.getMessage(), e);
+        log.error("{} - Failed to fetch data from the platform: {}",
+                Constants.BLUETOOTH_DATA_TOPIC_SITES, e.getMessage(), e);
       return getAFailedResponse();
     }
   }
 
   public HttpResponse getAFailedResponse() {
-    BasicStatusLine statusLine = new BasicStatusLine(HttpVersion.HTTP_1_1, 404,
-        "Failed to get response from the remote");
+      BasicStatusLine statusLine = new BasicStatusLine(HttpVersion.HTTP_1_1, 404,
+              "Failed to get response from the remote");
     return new BasicHttpResponse(statusLine);
   }
 }

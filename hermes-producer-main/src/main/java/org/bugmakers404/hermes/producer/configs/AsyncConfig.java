@@ -38,10 +38,10 @@ public class AsyncConfig implements AsyncConfigurer {
         return pool;
     }
 
-  @Override
-  public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-    return (ex, method, params) -> log.error("Async method {} threw an exception: {}", method.getName(),
-        ex.getMessage(), ex);
-  }
+    @Override
+    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+        return (ex, method, params) -> log.error("Async method {} threw an exception: {}", method.getName(),
+                ex.getMessage(), ex);
+    }
 }
 

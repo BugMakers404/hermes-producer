@@ -44,3 +44,5 @@ bin/
 
 ### jenv ###
 .java-version
+
+*.log

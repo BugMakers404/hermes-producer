@@ -12,29 +12,29 @@ public class KafkaTopicConfig {
   @Bean
   public NewTopic topicOfLinks() {
     return TopicBuilder.name(Constants.BLUETOOTH_DATA_TOPIC_LINKS)
-        .partitions(Constants.KAFKA_PARTITION_COUNT)
-        .replicas(Constants.KAFKA_REPLICA_COUNT).build();
+            .partitions(Constants.KAFKA_PARTITION_COUNT)
+            .replicas(Constants.KAFKA_REPLICA_COUNT).build();
   }
 
   @Bean
   public NewTopic topicOfLinksWithGeometry() {
-    return TopicBuilder.name(Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO)
-        .partitions(Constants.KAFKA_PARTITION_COUNT).replicas(Constants.KAFKA_REPLICA_COUNT)
-        .build();
+      return TopicBuilder.name(Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO)
+              .partitions(Constants.KAFKA_PARTITION_COUNT).replicas(Constants.KAFKA_REPLICA_COUNT)
+              .build();
   }
 
   @Bean
   public NewTopic topicOfRoutes() {
-    return TopicBuilder.name(Constants.BLUETOOTH_DATA_TOPIC_ROUTES)
-        .partitions(Constants.KAFKA_PARTITION_COUNT)
-        .replicas(Constants.KAFKA_REPLICA_COUNT).build();
+      return TopicBuilder.name(Constants.BLUETOOTH_DATA_TOPIC_ROUTES)
+              .partitions(Constants.KAFKA_PARTITION_COUNT)
+              .replicas(Constants.KAFKA_REPLICA_COUNT).build();
   }
 
   @Bean
   public NewTopic topicOfSites() {
-    return TopicBuilder.name(Constants.BLUETOOTH_DATA_TOPIC_SITES)
-        .partitions(Constants.KAFKA_PARTITION_COUNT)
-        .replicas(Constants.KAFKA_REPLICA_COUNT).build();
+      return TopicBuilder.name(Constants.BLUETOOTH_DATA_TOPIC_SITES)
+              .partitions(Constants.KAFKA_PARTITION_COUNT)
+              .replicas(Constants.KAFKA_REPLICA_COUNT).build();
   }
 
 }

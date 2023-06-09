@@ -4,7 +4,7 @@ import org.apache.http.HttpResponse;
 
 public interface EventsCollectionService {
 
-  HttpResponse fetchLinksData();
+    HttpResponse fetchLinksData();
 
   HttpResponse fetchLinksWithGeoData();
 
