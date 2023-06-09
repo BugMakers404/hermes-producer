@@ -4,7 +4,7 @@ import java.time.OffsetDateTime;
 
 public interface EventsArchiveService {
 
-  void archiveLinkEvents(OffsetDateTime timestamp, String linkEvents);
+    void archiveLinkEvents(OffsetDateTime timestamp, String linkEvents);
 
   void archiveLinkWithGeoEvents(OffsetDateTime timestamp, String linkWithGeoEvents);
 

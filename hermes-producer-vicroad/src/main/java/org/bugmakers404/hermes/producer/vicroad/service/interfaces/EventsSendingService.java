@@ -4,7 +4,7 @@ import java.time.OffsetDateTime;
 
 public interface EventsSendingService {
 
-  void sendLinkEvents(OffsetDateTime timestamp, String linkEvents);
+    void sendLinkEvents(OffsetDateTime timestamp, String linkEvents);
 
   void sendLinkWithGeoEvents(OffsetDateTime timestamp, String linkWithGeoEvents);
 

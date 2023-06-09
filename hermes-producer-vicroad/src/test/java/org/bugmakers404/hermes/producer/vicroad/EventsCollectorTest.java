@@ -1,24 +1,25 @@
 package org.bugmakers404.hermes.producer.vicroad;
 
-import static org.testng.Assert.assertEquals;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
 import org.apache.http.HttpResponse;
 import org.bugmakers404.hermes.producer.vicroad.configs.EventsCollector;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import static org.testng.Assert.assertEquals;
+
 public class EventsCollectorTest {
 
-  public String key;
+    public String key;
 
-  public String linksUrl;
+    public String linksUrl;
 
-  public String linksWithGeometryUrl;
+    public String linksWithGeometryUrl;
 
-  public String routesUrl;
+    public String routesUrl;
 
   public String sitesUrl;
 

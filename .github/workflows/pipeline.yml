@@ -152,5 +152,7 @@ jobs:
                        --mount type=bind,source=/home/ubuntu/app/application.properties,destination=/app/application.properties,readonly \
                        --mount type=bind,source=/home/ubuntu/app/data,destination=/app/vicroad_data_archives \
                        --mount type=bind,source=/home/ubuntu/.aws,destination=/root/.aws,readonly \
+                       --mount type=bind,source=/home/ubuntu/app/logs,destination=/app/logs \
                        ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+            docker image prune -a -f
           '
