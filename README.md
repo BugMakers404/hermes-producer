@@ -1,1 +1,1 @@
-Testing the protection rule for the main branch 2.
+Waiting for the explanation of hermes-producer functionalities.
