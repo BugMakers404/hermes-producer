@@ -1,13 +1,25 @@
 package org.bugmakers404.hermes.producer.vicroad;
 
+import static org.bugmakers404.hermes.producer.vicroad.util.Constants.VICROAD_DATA_ARCHIVES_ROOT;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.testng.Assert.assertTrue;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
-import org.bugmakers404.hermes.producer.vicroad.service.EventsCollectionFactory;
-import org.bugmakers404.hermes.producer.vicroad.service.EventsScheduler;
-import org.bugmakers404.hermes.producer.vicroad.service.KafkaProducerServiceImpl;
-import org.bugmakers404.hermes.producer.vicroad.service.S3ClientServiceImpl;
-import org.bugmakers404.hermes.producer.vicroad.utils.Constants;
+import org.bugmakers404.hermes.producer.vicroad.service.EventsSchedulerServiceImpl;
+import org.bugmakers404.hermes.producer.vicroad.service.interfaces.EventsArchiveService;
+import org.bugmakers404.hermes.producer.vicroad.service.interfaces.EventsCollectionService;
+import org.bugmakers404.hermes.producer.vicroad.service.interfaces.EventsSchedulerService;
+import org.bugmakers404.hermes.producer.vicroad.service.interfaces.EventsSendingService;
+import org.bugmakers404.hermes.producer.vicroad.util.Constants;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.util.FileSystemUtils;
@@ -15,30 +27,18 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import static org.bugmakers404.hermes.producer.vicroad.utils.Constants.VICROAD_DATA_ARCHIVES_ROOT;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertTrue;
-
 public class EventsSchedulerTest {
 
-    @Mock
-    private EventsCollectionFactory eventsCollectionFactory;
+  @Mock
+  private EventsCollectionService eventsCollectionService;
 
-    @Mock
-    private KafkaProducerServiceImpl kafkaProducerServiceImpl;
+  @Mock
+  private EventsSendingService eventsSendingService;
 
-    @Mock
-  private S3ClientServiceImpl s3ClientServiceImpl;
+  @Mock
+  private EventsArchiveService eventsArchiveService;
 
-  private EventsScheduler eventsScheduler;
+  private EventsSchedulerService eventsScheduler;
 
   private final String successResponseContent = "[{\"latest_stats\": {\"interval_start\": \"2023-03-20T18:08:00+11:00\"}}]";
 
@@ -48,9 +48,9 @@ public class EventsSchedulerTest {
 
   @BeforeMethod
   public void setUp() {
-      closeable = MockitoAnnotations.openMocks(this);
-      eventsScheduler = new EventsScheduler(eventsCollectionFactory, kafkaProducerServiceImpl,
-              s3ClientServiceImpl);
+    closeable = MockitoAnnotations.openMocks(this);
+    eventsScheduler = new EventsSchedulerServiceImpl(eventsCollectionService, eventsSendingService,
+        eventsArchiveService);
   }
 
   @AfterMethod
@@ -79,76 +79,138 @@ public class EventsSchedulerTest {
   public void collectLinksDataSuccessTest() throws IOException {
     BasicHttpResponse successResponse = createMockedHttpResponse(200, successResponseContent);
 
-    when(eventsCollectionFactory.fetchLinksData()).thenReturn(successResponse);
-    eventsScheduler.collectLinksData();
-    verify(eventsCollectionFactory, times(1)).fetchLinksData();
+    when(eventsCollectionService.fetchData(Constants.BLUETOOTH_DATA_TOPIC_LINKS)).thenReturn(
+        successResponse);
+    eventsScheduler.collectAndSendLinksData();
+    verify(eventsCollectionService, times(1)).fetchData(Constants.BLUETOOTH_DATA_TOPIC_LINKS);
   }
 
   @Test
   public void collectLinksDataFailureTest() throws IOException {
     BasicHttpResponse failResponse = createMockedHttpResponse(500, failedResponseContent);
 
-    when(eventsCollectionFactory.fetchLinksData()).thenReturn(failResponse);
-      eventsScheduler.collectLinksData();
-      verify(eventsCollectionFactory,
-              times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchLinksData();
+    when(eventsCollectionService.fetchData(Constants.BLUETOOTH_DATA_TOPIC_LINKS)).thenReturn(
+        failResponse);
+    eventsScheduler.collectAndSendLinksData();
+    verify(eventsCollectionService, times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_LINKS);
   }
 
   @Test
   public void collectLinksWithGeoDataSuccessTest() throws IOException {
     BasicHttpResponse successResponse = createMockedHttpResponse(200, successResponseContent);
 
-    when(eventsCollectionFactory.fetchLinksWithGeoData()).thenReturn(successResponse);
-    eventsScheduler.collectLinksWithGeoData();
-    verify(eventsCollectionFactory, times(1)).fetchLinksWithGeoData();
+    when(eventsCollectionService.fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO)).thenReturn(successResponse);
+    eventsScheduler.collectAndSendLinksWithGeoData();
+    verify(eventsCollectionService, times(1)).fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO);
   }
 
   @Test
   public void collectLinksWithGeoDataFailureTest() throws IOException {
     BasicHttpResponse failResponse = createMockedHttpResponse(500, failedResponseContent);
 
-    when(eventsCollectionFactory.fetchLinksWithGeoData()).thenReturn(failResponse);
-      eventsScheduler.collectLinksWithGeoData();
-      verify(eventsCollectionFactory,
-              times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchLinksWithGeoData();
+    when(eventsCollectionService.fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO)).thenReturn(failResponse);
+    eventsScheduler.collectAndSendLinksWithGeoData();
+    verify(eventsCollectionService,
+        times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_LINKS_WITH_GEO);
   }
 
   @Test
   public void collectRoutesDataSuccessTest() throws IOException {
     BasicHttpResponse successResponse = createMockedHttpResponse(200, successResponseContent);
 
-    when(eventsCollectionFactory.fetchRoutesData()).thenReturn(successResponse);
-    eventsScheduler.collectRoutesData();
-    verify(eventsCollectionFactory, times(1)).fetchRoutesData();
+    when(eventsCollectionService.fetchData(Constants.BLUETOOTH_DATA_TOPIC_ROUTES)).thenReturn(
+        successResponse);
+    eventsScheduler.collectAndSendRoutesData();
+    verify(eventsCollectionService, times(1)).fetchData(Constants.BLUETOOTH_DATA_TOPIC_ROUTES);
   }
 
   @Test
   public void collectRoutesDataFailureTest() throws IOException {
     BasicHttpResponse failResponse = createMockedHttpResponse(500, failedResponseContent);
 
-    when(eventsCollectionFactory.fetchRoutesData()).thenReturn(failResponse);
-      eventsScheduler.collectRoutesData();
-      verify(eventsCollectionFactory,
-              times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchRoutesData();
+    when(eventsCollectionService.fetchData(Constants.BLUETOOTH_DATA_TOPIC_ROUTES)).thenReturn(
+        failResponse);
+    eventsScheduler.collectAndSendRoutesData();
+    verify(eventsCollectionService,
+        times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_ROUTES);
+  }
+
+  @Test
+  public void collectRoutesWithGeoDataSuccessTest() throws IOException {
+    BasicHttpResponse successResponse = createMockedHttpResponse(200, successResponseContent);
+
+    when(eventsCollectionService.fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_ROUTES_WITH_GEO)).thenReturn(
+        successResponse);
+    eventsScheduler.collectAndSendRoutesWithGeoData();
+    verify(eventsCollectionService, times(1)).fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_ROUTES_WITH_GEO);
+  }
+
+  @Test
+  public void collectRoutesWithGeoDataFailureTest() throws IOException {
+    BasicHttpResponse failResponse = createMockedHttpResponse(500, failedResponseContent);
+
+    when(eventsCollectionService.fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_ROUTES_WITH_GEO)).thenReturn(
+        failResponse);
+    eventsScheduler.collectAndSendRoutesWithGeoData();
+    verify(eventsCollectionService,
+        times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_ROUTES_WITH_GEO);
   }
 
   @Test
   public void collectSitesDataSuccessTest() throws IOException {
     BasicHttpResponse successResponse = createMockedHttpResponse(200, successResponseContent);
 
-    when(eventsCollectionFactory.fetchSitesData()).thenReturn(successResponse);
-    eventsScheduler.collectSitesData();
-    verify(eventsCollectionFactory, times(1)).fetchSitesData();
+    when(eventsCollectionService.fetchData(Constants.BLUETOOTH_DATA_TOPIC_SITES)).thenReturn(
+        successResponse);
+    eventsScheduler.collectAndSendSitesData();
+    verify(eventsCollectionService, times(1)).fetchData(Constants.BLUETOOTH_DATA_TOPIC_SITES);
   }
 
   @Test
   public void collectSitesDataFailureTest() throws IOException {
     BasicHttpResponse failResponse = createMockedHttpResponse(500, failedResponseContent);
 
-    when(eventsCollectionFactory.fetchSitesData()).thenReturn(failResponse);
-      eventsScheduler.collectSitesData();
-      verify(eventsCollectionFactory,
-              times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchSitesData();
+    when(eventsCollectionService.fetchData(Constants.BLUETOOTH_DATA_TOPIC_SITES)).thenReturn(
+        failResponse);
+    eventsScheduler.collectAndSendSitesData();
+    verify(eventsCollectionService,
+        times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_SITES);
+  }
+
+  @Test
+  public void collectSitesWithGeoDataSuccessTest() throws IOException {
+    BasicHttpResponse successResponse = createMockedHttpResponse(200, successResponseContent);
+
+    when(eventsCollectionService.fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_SITES_WITH_GEO)).thenReturn(
+        successResponse);
+    eventsScheduler.collectAndSendSitesWithGeoData();
+    verify(eventsCollectionService, times(1)).fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_SITES_WITH_GEO);
+  }
+
+  @Test
+  public void collectSitesDataWithGeoFailureTest() throws IOException {
+    BasicHttpResponse failResponse = createMockedHttpResponse(500, failedResponseContent);
+
+    when(eventsCollectionService.fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_SITES_WITH_GEO)).thenReturn(
+        failResponse);
+    eventsScheduler.collectAndSendSitesWithGeoData();
+    verify(eventsCollectionService,
+        times(Constants.BLUETOOTH_MAX_COLLECTION_RETRIES)).fetchData(
+        Constants.BLUETOOTH_DATA_TOPIC_SITES_WITH_GEO);
   }
 
 }

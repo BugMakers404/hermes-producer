@@ -1,13 +1,13 @@
-package org.bugmakers404.hermes.producer.vicroad.configs;
+package org.bugmakers404.hermes.producer.vicroad.config;
 
+import java.net.URISyntaxException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.net.URISyntaxException;
-
 @Configuration
 public class EventsCollectorConfig {
+
   @Value("${vicroad.subscription-key}")
   public String key;
 

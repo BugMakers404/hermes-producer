@@ -4,12 +4,5 @@ import org.apache.http.HttpResponse;
 
 public interface EventsCollectionService {
 
-    HttpResponse fetchLinksData();
-
-  HttpResponse fetchLinksWithGeoData();
-
-  HttpResponse fetchRoutesData();
-
-  HttpResponse fetchSitesData();
-
+  HttpResponse fetchData(String topic);
 }

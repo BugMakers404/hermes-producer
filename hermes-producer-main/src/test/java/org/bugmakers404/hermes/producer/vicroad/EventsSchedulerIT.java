@@ -2,9 +2,9 @@ package org.bugmakers404.hermes.producer.vicroad;
 
 import static org.mockito.Mockito.verify;
 
-import org.bugmakers404.hermes.producer.vicroad.configs.EventsCollector;
-import org.bugmakers404.hermes.producer.vicroad.service.EventsScheduler;
+import org.bugmakers404.hermes.producer.vicroad.config.EventsCollector;
 import org.bugmakers404.hermes.producer.vicroad.service.KafkaProducerServiceImpl;
+import org.bugmakers404.hermes.producer.vicroad.service.interfaces.EventsSchedulerService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import org.testng.annotations.Test;
 public class EventsSchedulerIT extends AbstractTestNGSpringContextTests {
 
   @Autowired
-  private EventsScheduler eventsScheduler;
+  private EventsSchedulerService eventsSchedulerService;
 
   @Mock
   private EventsCollector linksCollector;
@@ -45,25 +45,25 @@ public class EventsSchedulerIT extends AbstractTestNGSpringContextTests {
 
   @Test(enabled = false)
   public void testCollectLinksData() throws Exception {
-    eventsScheduler.collectLinksData();
+    eventsSchedulerService.collectAndSendLinksData();
     verify(linksCollector).fetchData();
   }
 
   @Test(enabled = false)
   public void testCollectLinksWithGeometryData() throws Exception {
-    eventsScheduler.collectLinksWithGeoData();
+    eventsSchedulerService.collectAndSendLinksWithGeoData();
     verify(linksWithGeometryCollector).fetchData();
   }
 
   @Test(enabled = false)
   public void testCollectRoutesData() throws Exception {
-    eventsScheduler.collectRoutesData();
+    eventsSchedulerService.collectAndSendRoutesData();
     verify(routesCollector).fetchData();
   }
 
   @Test(enabled = false)
   public void testCollectSitesData() throws Exception {
-    eventsScheduler.collectSitesData();
+    eventsSchedulerService.collectAndSendSitesData();
     verify(sitesCollector).fetchData();
   }
 }

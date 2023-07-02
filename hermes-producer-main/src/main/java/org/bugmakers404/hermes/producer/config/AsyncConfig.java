@@ -1,4 +1,4 @@
-package org.bugmakers404.hermes.producer.configs;
+package org.bugmakers404.hermes.producer.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;

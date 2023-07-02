@@ -1,15 +1,14 @@
 package org.bugmakers404.hermes.producer.vicroad;
 
-import org.apache.http.HttpResponse;
-import org.bugmakers404.hermes.producer.vicroad.configs.EventsCollector;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import static org.testng.Assert.assertEquals;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-
-import static org.testng.Assert.assertEquals;
+import org.apache.http.HttpResponse;
+import org.bugmakers404.hermes.producer.vicroad.config.EventsCollector;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 public class EventsCollectorTest {
 
