@@ -35,7 +35,7 @@ jobs:
       # secrets.APPLICATION_PROPERTIES is the content instead of the path to application.properties
       - name: Create application.properties
         run:
-          echo "${{ secrets.APPLICATION_PROPERTIES }}" > application.properties
+          echo "${{ secrets.HERMES_APPLICATION_PROPERTIES_DEV }}" > application.properties
 
       - name: Create container resources required by hermes-producer
         run:
@@ -145,6 +145,10 @@ jobs:
         run: |
           echo "${{ env.AWS_SSH_PRIVATE_KEY }}" > my_key.pem
           chmod 600 my_key.pem
+          
+          echo "${{ secrets.HERMES_APPLICATION_PROPERTIES_PROD }}" > application.properties
+          scp -o StrictHostKeyChecking=no -i my_key.pem application.properties ubuntu@${{ env.LIGHTSAIL_IP }}:/home/ubuntu/app/
+          
           ssh -o StrictHostKeyChecking=no -i my_key.pem ubuntu@${{ env.LIGHTSAIL_IP }} '
             docker pull ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest &&
             docker rm -f ${{ env.IMAGE_NAME }} || true &&
