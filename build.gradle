@@ -18,6 +18,7 @@ subprojects {
     apply plugin: 'io.spring.dependency-management'
 
     group 'org.bugmakers404.hermes'
+    sourceCompatibility = '17'
 
     def versionDetails = versionDetails()
     def versionSuffix = project.hasProperty('release') ? '-RELEASE' : '-SNAPSHOT'
@@ -54,9 +55,3 @@ dockerCompose {
     projectName = 'hermes-producer'
     useComposeFiles = ['docker/local/docker-compose.yaml']
 }
-
-
-
-
-
-
